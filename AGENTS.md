@@ -9,6 +9,7 @@
 **Target:** 0–1 YOE React.js Developer
 
 **Primary Goal:**
+
 Build a clean, responsive, maintainable Employee Management application that satisfies the assessment requirements without unnecessary over-engineering.
 
 ---
@@ -46,17 +47,19 @@ Use:
 - TypeScript
 - Vite
 - Redux Toolkit
-- RTK Query for API/data fetching where appropriate
+- RTK Query for API/data fetching
 - React Hook Form
 - Zod
 - Material UI (MUI)
-- React Router only where routing is genuinely useful
+- React Router only if routing becomes genuinely necessary
 - Vitest
 - React Testing Library
 - MSW for API mocking
 - ESLint
 - Prettier
 - Git
+
+Use stable versions available at implementation time.
 
 Do not introduce additional libraries unless there is a clear technical reason.
 
@@ -76,6 +79,8 @@ Follow these principles:
 8. Use TypeScript instead of `any`.
 9. Keep validation rules centralized.
 10. Make important behavior testable.
+11. Prefer simple solutions over unnecessary abstraction.
+12. Do not over-engineer a 0–1 YOE assessment project.
 
 ---
 
@@ -175,6 +180,8 @@ src/
 
 Do not create folders that have no meaningful responsibility.
 
+If React Router is not actually required, do not create unnecessary route infrastructure.
+
 ---
 
 # 7. Employee Data Requirements
@@ -243,13 +250,15 @@ Do not write repeated `fetch()` calls inside multiple components.
 
 API-related code should be centralized.
 
+Use RTK Query for server state, caching, request status, and cache invalidation where appropriate.
+
 ---
 
 # 10. Redux Rules
 
 Use Redux Toolkit.
 
-Use RTK Query for server/API state where appropriate.
+Use RTK Query for server/API state.
 
 Do not put every piece of UI state into Redux.
 
@@ -270,11 +279,11 @@ Do not put every piece of UI state into Redux.
 - Employees
 - Employee-by-ID requests
 - Countries
-- Loading states related to requests
+- Request loading states
 - API errors
 - Cache management
 
-Avoid duplicated server data in multiple Redux locations.
+Avoid duplicating server data in multiple Redux locations.
 
 ---
 
@@ -401,6 +410,8 @@ Update/invalidate employee data
 
 The edit form must not behave like a blank create form.
 
+Use the same reusable EmployeeForm for Create and Edit.
+
 ---
 
 # 15. Delete Flow
@@ -452,9 +463,9 @@ Validate:
 
 Show errors near the relevant field.
 
-Do not use AI to determine basic validation rules.
+Validation must be deterministic and handled by application code.
 
-Deterministic validation must remain deterministic.
+Do not use AI to determine or execute basic validation logic.
 
 ---
 
@@ -473,6 +484,8 @@ If the Country API does not provide State/District data, do not invent that API 
 Use a suitable local/mock data source if necessary.
 
 If State/District depend on Country/State, clear invalid dependent selections when the parent selection changes.
+
+Document any necessary data-source decision.
 
 ---
 
@@ -546,7 +559,9 @@ Implement basic accessibility:
 - Meaningful button text
 - Do not communicate status through color alone
 
-Do not add ARIA attributes unnecessarily. Prefer semantic HTML first.
+Prefer semantic HTML first.
+
+Do not add ARIA attributes unnecessarily.
 
 ---
 
@@ -562,23 +577,21 @@ MSW
 
 Tests should focus on user-visible behavior and important application behavior.
 
-Cover:
-
-### Components
+## Components
 
 - Employee table
 - Employee form
 - Search
 - Delete dialog
 
-### Validation
+## Validation
 
 - Required fields
 - Invalid email
 - Invalid field length
 - Valid submission
 
-### API
+## API
 
 - GET success
 - GET failure
@@ -586,7 +599,7 @@ Cover:
 - PUT success/failure
 - DELETE success/failure
 
-### Interactions
+## Interactions
 
 - Add employee
 - Edit employee
@@ -595,7 +608,7 @@ Cover:
 - Search employee
 - Employee not found
 
-### UI states
+## UI states
 
 - Loading
 - Empty
@@ -630,6 +643,8 @@ Component props
 
 Avoid unnecessary type duplication.
 
+Do not use TypeScript merely to add types everywhere. Types should improve correctness and maintainability.
+
 ---
 
 # 23. Error Handling
@@ -650,6 +665,16 @@ Please try again.
 ```
 
 Log technical information appropriately during development without exposing unnecessary implementation details to users.
+
+Differentiate:
+
+```text
+Not Found
+Validation Error
+Network/API Error
+```
+
+Do not convert every failure into the same user message.
 
 ---
 
@@ -674,7 +699,9 @@ useCallback
 React.memo
 ```
 
-Use them when profiling or component behavior justifies them.
+Use them only when component behavior or profiling justifies them.
+
+Do not sacrifice readability for micro-optimizations.
 
 ---
 
@@ -700,6 +727,8 @@ Do not mix several UI libraries without a strong reason.
 
 Keep spacing, typography, radius, and interaction states consistent.
 
+Use a small centralized theme for visual consistency where appropriate.
+
 ---
 
 # 26. AI Coding Rules
@@ -714,58 +743,42 @@ AI may assist with:
 - Documentation
 - Edge-case identification
 
+AI is a development assistant only.
+
+**Do not integrate AI functionality into the Employee Management application.**
+
 AI-generated code must be reviewed before committing.
 
 Never blindly copy generated code.
 
 Before accepting AI-generated code, verify:
 
-1. Does it satisfy the requirement?
+1. Does it satisfy the assessment requirement?
 2. Is the TypeScript correct?
 3. Is the API behavior correct?
 4. Is the state architecture correct?
 5. Does it introduce unnecessary complexity?
 6. Does it need a test?
 7. Does it break an existing feature?
+8. Does it follow this `AGENTS.md` file?
+9. Does it introduce an unnecessary dependency?
 
 AI must not make architectural decisions without human review.
 
----
+When asking an AI coding agent to modify the project:
 
-# 27. Optional AI Feature
+- Give one meaningful task at a time.
+- Explain the relevant requirement.
+- Ask it to inspect existing code before changing it.
+- Do not ask it to rewrite the entire project unnecessarily.
+- Review the diff after every significant change.
+- Run tests, lint, and build after meaningful changes.
 
-AI is NOT required.
-
-If an AI feature is added, it should remain a small enhancement.
-
-Preferred example:
-
-```text
-Natural-language employee search
-```
-
-Example:
-
-```text
-"Show employees from India"
-```
-
-AI may interpret the request and help filter/search employee data.
-
-AI must NOT replace:
-
-- CRUD logic
-- Form validation
-- API layer
-- Redux state management
-- Delete confirmation
-- Security/business rules
-
-If the AI feature becomes unreliable or unavailable, the core employee application must continue working.
+The human developer remains responsible for the final code.
 
 ---
 
-# 28. Features NOT Required
+# 27. Features NOT Required
 
 Do not add these unless specifically requested:
 
@@ -781,98 +794,395 @@ Do not add these unless specifically requested:
 - AWS
 - Docker
 - Microservices
-- AI chatbot
+- AI integration
 - Complex animations
 
 Avoid feature creep.
 
 ---
 
-# 29. Development Order
+# 28. Project Setup and Initialization
 
-Implement in this order:
+The project must use:
 
 ```text
-1. Project setup
-2. TypeScript models
-3. API configuration
-4. Redux/RTK Query
-5. Employee list
-6. Loading/error/empty states
-7. Employee search
-8. Employee form
-9. Validation
-10. Create
-11. Edit
-12. Delete + confirmation
-13. Country/State/District behavior
-14. Responsive UI
-15. Accessibility
-16. Success/error feedback
-17. Tests
-18. README
-19. Lint
-20. Test
-21. Production build
-22. Optional enhancements
+Vite
+React
+TypeScript
 ```
 
-Do not start with optional features.
+Do not replace Vite with Create React App or another build tool.
+
+Use stable versions available at implementation time.
+
+Avoid unnecessary version changes after project initialization.
 
 ---
 
-# 30. Definition of Done
+# 29. Initial Project Creation
 
-A feature is complete only when:
+Create the project using the Vite React TypeScript template.
 
-- It works correctly.
-- It is responsive.
-- It handles loading.
-- It handles errors.
-- It handles empty/not-found states where applicable.
-- It is properly typed.
-- It follows the project architecture.
-- It has meaningful tests when behavior is important.
-- It does not introduce unnecessary duplication.
-- Lint passes.
-- Tests pass.
-- Production build passes.
+Expected flow:
 
-Before considering the project complete, run:
+```text
+Create Vite project
+      ↓
+Select React
+      ↓
+Select TypeScript
+      ↓
+Install dependencies
+      ↓
+Start development server
+      ↓
+Verify application
+```
 
-```bash
+The initial project must successfully run before adding application features.
+
+---
+
+# 30. Dependency Installation
+
+Install only dependencies required by the project.
+
+Core:
+
+```text
+React
+React DOM
+Redux Toolkit
+React Redux
+React Hook Form
+Zod
+MUI
+```
+
+React Router should be installed only if routing is genuinely required.
+
+Development/testing:
+
+```text
+Vitest
+React Testing Library
+MSW
+ESLint
+Prettier
+```
+
+Do not install a package merely because it is popular.
+
+Every additional dependency must have a clear technical purpose.
+
+---
+
+# 31. Project Configuration Order
+
+Configure in this order:
+
+```text
+1. Verify Vite + React + TypeScript
+2. Configure ESLint
+3. Configure Prettier
+4. Configure environment variables
+5. Configure MUI/theme
+6. Configure Redux store
+7. Configure RTK Query
+8. Configure React Router only if required
+9. Configure Vitest
+10. Configure React Testing Library
+11. Configure MSW
+12. Create application folders
+```
+
+Do not build feature functionality before the foundation is stable.
+
+---
+
+# 32. Environment Configuration
+
+The API base URL must not be hard-coded throughout the application.
+
+Use:
+
+```text
+VITE_API_BASE_URL
+```
+
+Recommended files:
+
+```text
+.env
+.env.example
+```
+
+Do not commit secrets or private credentials.
+
+The provided MockAPI URL is not a secret, but keeping it configurable improves maintainability.
+
+---
+
+# 33. NPM Scripts
+
+Provide working scripts for:
+
+```text
+npm run dev
+npm run build
+npm run preview
 npm run lint
 npm run test
+```
+
+Where useful:
+
+```text
+npm run test:run
+```
+
+Document the scripts in the README.
+
+---
+
+# 34. Initial Verification Gate
+
+Before implementing Employee Management functionality, verify:
+
+```text
+✓ Vite starts successfully
+✓ React renders successfully
+✓ TypeScript compilation works
+✓ ESLint works
+✓ Production build works
+✓ Test runner works
+```
+
+Minimum verification:
+
+```bash
+npm run dev
+npm run lint
 npm run build
+npm run test
+```
+
+Do not proceed to feature implementation if the foundation is broken.
+
+---
+
+# 35. Git Initialization
+
+Initialize Git before substantial feature development.
+
+Recommended initial commits:
+
+```text
+chore: initialize React TypeScript Vite project
+chore: configure development tooling
+chore: configure testing environment
+```
+
+Use small, meaningful commits.
+
+Avoid meaningless messages such as:
+
+```text
+final
+changes
+working
+update
 ```
 
 ---
 
-# 31. Final Engineering Principle
+# 36. Setup Completion Criteria
 
-Build the smallest application that completely satisfies the assessment.
-
-Prioritize:
+Project setup is complete only when:
 
 ```text
-Correctness
-    >
-Maintainability
-    >
-Testability
-    >
-Accessibility
-    >
-Performance
-    >
-Optional features
+✓ React + TypeScript + Vite project runs
+✓ Required dependencies are installed
+✓ Folder structure is created
+✓ API configuration exists
+✓ Redux foundation exists
+✓ Testing foundation exists
+✓ Lint passes
+✓ Build passes
+✓ Test runner passes
+✓ Git repository is initialized
 ```
 
-Do not add complexity merely to make the project look advanced.
+Only after these checks should Employee Management features be implemented.
 
-The project should demonstrate that the developer can take a real frontend requirement and turn it into a reliable React application.
+---
 
-# 32. UI Structure
+# 37. Implementation Sequence
+
+After setup is verified, continue in this exact order:
+
+```text
+1. Define Employee and Country types
+2. Inspect actual API response structures
+3. Configure API base query
+4. Create employee API endpoints
+5. Create country API endpoint
+6. Configure RTK Query tags/cache strategy
+7. Build EmployeesPage
+8. Build EmployeeTable
+9. Implement employee list GET
+10. Implement loading/error/empty states
+11. Build EmployeeSearch
+12. Implement employee-by-ID search
+13. Implement not-found state
+14. Build reusable EmployeeForm
+15. Implement Zod validation
+16. Implement Country/State/District fields
+17. Implement Create
+18. Implement Edit + pre-population
+19. Implement Delete + confirmation
+20. Implement success/error feedback
+21. Implement responsive behavior
+22. Implement accessibility
+23. Write tests
+24. Mock API requests with MSW
+25. Run lint/tests/build
+26. Review architecture and remove unnecessary code
+27. Update README
+28. Deploy only after local verification
+29. Consider optional enhancements only after all requirements pass
+```
+
+---
+
+# 38. API Contract Verification Rule
+
+Before writing API-dependent logic, inspect the actual response from the provided API.
+
+Do not assume:
+
+```text
+Employee fields
+Country fields
+State data
+District data
+ID format
+Error response format
+```
+
+If the real API response differs from assumptions, adapt the implementation to the actual contract and document the decision.
+
+Do not invent API behavior.
+
+---
+
+# 39. Development Workflow
+
+Work on one meaningful feature at a time.
+
+For each feature:
+
+```text
+Requirement
+    ↓
+Inspect existing code
+    ↓
+Implementation
+    ↓
+Test
+    ↓
+Manual verification
+    ↓
+Lint
+    ↓
+Review diff
+    ↓
+Commit
+```
+
+Do not implement multiple unrelated features simultaneously.
+
+After significant changes, verify that existing functionality still works.
+
+---
+
+# 40. Scope Protection During Development
+
+If a proposed feature is not required by the assessment, classify it as:
+
+```text
+MUST
+GOOD TO HAVE
+OPTIONAL
+```
+
+Do not implement OPTIONAL features while any MUST requirement is incomplete.
+
+The project must remain a focused Employee Management System.
+
+---
+
+# 41. First Coding Milestone
+
+The first coding milestone after setup is:
+
+```text
+Vite + React + TypeScript
+        ↓
+MUI
+        ↓
+Redux Toolkit / RTK Query
+        ↓
+API configuration
+        ↓
+Employee + Country types
+        ↓
+Employee GET endpoint
+        ↓
+Employee List screen
+```
+
+At this milestone, the application should be able to:
+
+```text
+Start
+  ↓
+Fetch employees
+  ↓
+Show loading
+  ↓
+Show employees
+  ↓
+Show empty state
+  ↓
+Show API error
+```
+
+Do not implement Create/Edit/Delete before the read/list flow is stable.
+
+---
+
+# 42. Engineering Gate Before CRUD
+
+Before starting POST/PUT/DELETE, verify:
+
+```text
+✓ API layer works
+✓ Types match actual API responses
+✓ RTK Query is configured correctly
+✓ Employee list renders correctly
+✓ Loading works
+✓ Empty works
+✓ Error works
+✓ Responsive list works
+✓ Basic tests work
+```
+
+Only then continue to Create, Edit, and Delete.
+
+---
+
+# 43. UI Structure
 
 The application should use a clean, professional admin-style layout focused only on Employee Management.
 
@@ -907,9 +1217,9 @@ Do NOT add Dashboard, Reports, Settings, Analytics, or unrelated navigation.
 
 ---
 
-# 33. Required Screens and UI States
+# 44. Required Screens and UI States
 
-The application should visually support these states:
+The application should visually support:
 
 ```text
 1. Employee List - Default
@@ -932,11 +1242,11 @@ The application should visually support these states:
 18. Success Feedback
 ```
 
-Every state must have a clear visual and interaction behavior.
+Every state must have clear visual and interaction behavior.
 
 ---
 
-# 34. Employee List UI
+# 45. Employee List UI
 
 The Employee List is the primary screen.
 
@@ -946,9 +1256,7 @@ Recommended hierarchy:
 Employees
     │
     ├── Search employee by ID
-    │
     ├── Add Employee
-    │
     └── Employee Table
 ```
 
@@ -974,11 +1282,11 @@ The table should support:
 - Disabled state where appropriate
 - Responsive behavior
 
-Do not add unnecessary columns that are not required.
+Do not add unnecessary columns.
 
 ---
 
-# 35. Add/Edit Form UI
+# 46. Add/Edit Form UI
 
 Use one reusable EmployeeForm for both Create and Edit.
 
@@ -1017,7 +1325,7 @@ Do not create two separate forms with duplicated logic.
 
 ---
 
-# 36. Form Layout
+# 47. Form Layout
 
 Desktop:
 
@@ -1069,7 +1377,7 @@ The form must remain usable without horizontal scrolling.
 
 ---
 
-# 37. Delete Confirmation UI
+# 48. Delete Confirmation UI
 
 Deleting an employee must require explicit confirmation.
 
@@ -1096,7 +1404,7 @@ Prevent duplicate DELETE requests.
 
 ---
 
-# 38. Search UI Flow
+# 49. Search UI Flow
 
 Search is specifically based on Employee ID.
 
@@ -1106,8 +1414,8 @@ Search is specifically based on Employee ID.
        ▼
 GET /employee/:id
        │
- ┌─────┼─────┐
- ▼     ▼     ▼
+  ┌────┼────┐
+  ▼    ▼    ▼
 Found NotFound Error
 ```
 
@@ -1141,9 +1449,7 @@ Do not treat an API error as "Employee not found."
 
 ---
 
-# 39. UI State Behavior
-
-Use distinct states:
+# 50. UI State Behavior
 
 ## Loading
 
@@ -1187,7 +1493,7 @@ Employee deleted successfully.
 
 ---
 
-# 40. Interaction Workflow
+# 51. Interaction Workflow
 
 ## Application startup
 
@@ -1277,7 +1583,7 @@ Found / Not Found / Error
 
 ---
 
-# 41. UI Component Hierarchy
+# 52. UI Component Hierarchy
 
 Recommended structure:
 
@@ -1285,33 +1591,28 @@ Recommended structure:
 EmployeesPage
 │
 ├── PageHeader
-│
 ├── EmployeeSearch
-│
 ├── EmployeeTable
 │   └── EmployeeRow
-│
 ├── EmployeeForm
 │   ├── FormField
 │   ├── CountrySelect
 │   ├── StateSelect
 │   └── DistrictSelect
-│
 ├── DeleteEmployeeDialog
-│
 ├── LoadingState
 ├── EmptyState
 ├── ErrorState
 └── SuccessSnackbar
 ```
 
-Use reusable components where the behavior or presentation is genuinely shared.
+Use reusable components where behavior or presentation is genuinely shared.
 
-Do not create tiny components solely to increase the component count.
+Do not create tiny components solely to increase component count.
 
 ---
 
-# 42. UI Design Principles
+# 53. UI Design Principles
 
 The UI should be:
 
@@ -1345,7 +1646,7 @@ Avoid:
 
 ---
 
-# 43. Responsive Strategy
+# 54. Responsive Strategy
 
 Desktop:
 
@@ -1374,7 +1675,7 @@ Do not simply scale down the desktop design.
 
 ---
 
-# 44. UX Priority
+# 55. UX Priority
 
 When making UI decisions, use this priority:
 
@@ -1396,7 +1697,7 @@ A visually impressive feature that makes the required workflow harder to use sho
 
 ---
 
-# 45. UI vs Business Logic Boundary
+# 56. UI vs Business Logic Boundary
 
 UI components should communicate user intent.
 
@@ -1430,7 +1731,7 @@ Keep presentation and business logic appropriately separated.
 
 ---
 
-# 46. Optional UI Enhancements
+# 57. Optional UI Enhancements
 
 Only after all assessment requirements are complete, tested, and stable, consider:
 
@@ -1438,13 +1739,12 @@ Only after all assessment requirements are complete, tested, and stable, conside
 - Sorting if useful
 - Improved filtering
 - Employee count
-- AI-assisted natural-language employee search
 
 Optional enhancements must not interfere with the required assessment workflow.
 
 ---
 
-# 47. Explicit Scope Rule
+# 58. Explicit Scope Rule
 
 This project is an Employee Management assessment, not a full enterprise HR platform.
 
@@ -1459,3 +1759,68 @@ Every additional feature must answer:
 5. Can it be tested and maintained?
 
 If the answer is unclear, do not add the feature.
+
+---
+
+# 59. Final Engineering Principle
+
+Build the smallest application that completely satisfies the assessment.
+
+Prioritize:
+
+```text
+Correctness
+    >
+Maintainability
+    >
+Testability
+    >
+Accessibility
+    >
+Performance
+    >
+Optional features
+```
+
+Do not add complexity merely to make the project look advanced.
+
+The project should demonstrate that the developer can take a real frontend requirement and turn it into a reliable React application.
+
+---
+
+# 60. Final Verification
+
+Before submission, verify:
+
+```text
+✓ All assessment requirements implemented
+✓ All CRUD operations work
+✓ Search works
+✓ Edit pre-populates correctly
+✓ Delete confirmation works
+✓ Validation works
+✓ Loading states work
+✓ Error states work
+✓ Empty state works
+✓ Not-found state works
+✓ Responsive UI works
+✓ Accessibility basics work
+✓ API calls are centralized
+✓ Redux/RTK Query works correctly
+✓ Tests pass
+✓ API calls are mocked in tests
+✓ ESLint passes
+✓ Production build passes
+✓ README is complete
+✓ No unnecessary features or dependencies remain
+```
+
+Final commands:
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
+The application is ready for submission only after all required checks pass.
