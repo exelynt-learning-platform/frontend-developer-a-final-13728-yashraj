@@ -1,7 +1,46 @@
-import { Button, Stack, TextField } from '@mui/material'
+import { InputAdornment, Button, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 
-export function EmployeeSearch({ isLoading, onSearch, onClear }: { isLoading: boolean; onSearch: (id: string) => void; onClear: () => void }) {
+interface EmployeeSearchProps {
+  isLoading: boolean
+  onSearch: (id: string) => void
+  onClear: () => void
+}
+
+export function EmployeeSearch({ isLoading, onSearch, onClear }: EmployeeSearchProps) {
   const [id, setId] = useState('')
-  return <Stack component="form" direction={{ xs: 'column', sm: 'row' }} gap={1.5} onSubmit={(event) => { event.preventDefault(); if (id.trim()) onSearch(id.trim()) }}><TextField label="Employee ID" value={id} onChange={(event) => setId(event.target.value)} size="small" fullWidth inputProps={{ 'aria-label': 'Employee ID' }} /><Button type="submit" variant="outlined" disabled={isLoading || !id.trim()}>{isLoading ? 'Searching...' : 'Search'}</Button><Button type="button" onClick={() => { setId(''); onClear() }} disabled={!id}>Clear</Button></Stack>
+
+  return (
+    <Stack
+      component="form"
+      direction={{ xs: 'column', sm: 'row' }}
+      gap={1.5}
+      onSubmit={(event) => {
+        event.preventDefault()
+        if (id.trim()) onSearch(id.trim())
+      }}
+    >
+      <TextField
+        value={id}
+        onChange={(event) => setId(event.target.value)}
+        placeholder="Enter employee ID..."
+        size="small"
+        fullWidth
+        inputProps={{ 'aria-label': 'Employee ID' }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Typography aria-hidden color="primary" sx={{ fontSize: 22, lineHeight: 1 }}>⌕</Typography>
+            </InputAdornment>
+          ),
+        }}
+      />
+      <Button type="submit" variant="contained" disabled={isLoading || !id.trim()} sx={{ minWidth: 86 }}>
+        {isLoading ? 'Searching...' : 'Search'}
+      </Button>
+      <Button type="button" variant="outlined" onClick={() => { setId(''); onClear() }} disabled={!id} sx={{ minWidth: 76 }}>
+        Clear
+      </Button>
+    </Stack>
+  )
 }

@@ -162,7 +162,11 @@ export function App() {
               Manage your organization&apos;s employee directory.
             </Typography>
           </Box>
-          <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+          <Stack
+            direction="column"
+            gap={2}
+          >
+          <Paper sx={{ p: { xs: 2, sm: 3 }, width: "100%" }}>
             <Stack gap={2}>
               <Typography variant="h6">Search by employee ID</Typography>
               <EmployeeSearch
@@ -192,6 +196,7 @@ export function App() {
               )}
             </Stack>
           </Paper>
+          </Stack>
           <Stack
             alignItems={{ xs: "stretch", sm: "center" }}
             direction={{ xs: "column", sm: "row" }}
@@ -200,7 +205,7 @@ export function App() {
           >
             <Typography variant="h6">Employee list</Typography>
             <Button variant="contained" onClick={() => setFormEmployee(null)}>
-              Add Employee
+              ＋ Add Employee
             </Button>
           </Stack>
           {employeesQuery.isLoading && (
