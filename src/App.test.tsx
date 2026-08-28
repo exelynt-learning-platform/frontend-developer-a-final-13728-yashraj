@@ -183,4 +183,37 @@ describe("App", () => {
       screen.queryByRole("button", { name: "Actions" }),
     ).not.toBeInTheDocument();
   });
+
+  it("sorts only the employees in the selected page", () => {
+    const employees = [
+      "Zoe Employee",
+      "Ada Employee",
+      "Mia Employee",
+      "Liam Employee",
+      "Noah Employee",
+      "Aaron Employee",
+    ].map((name, index) => ({
+      id: String(index + 1),
+      name,
+      email: `employee${index + 1}@example.com`,
+      mobile: "1234567890",
+      country: "India",
+      state: "Delhi",
+      district: "New Delhi",
+    }));
+
+    render(
+      <EmployeeTable
+        employees={employees}
+        onEdit={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Name" }));
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("Ada Employee");
+    expect(screen.queryByText("Aaron Employee")).not.toBeInTheDocument();
+  });
 });

@@ -109,8 +109,15 @@ export function EmployeeTable({
     rowsPerPage === -1 ? 1 : Math.ceil(employees.length / rowsPerPage),
   );
   const currentPage = Math.min(page, totalPages);
-  const sortedEmployees = sortKey
-    ? [...employees].sort((firstEmployee, secondEmployee) => {
+  const paginatedEmployees =
+    rowsPerPage === -1
+      ? employees
+      : employees.slice(
+          (currentPage - 1) * rowsPerPage,
+          currentPage * rowsPerPage,
+        );
+  const visibleEmployees = sortKey
+    ? [...paginatedEmployees].sort((firstEmployee, secondEmployee) => {
         const comparison = firstEmployee[sortKey].localeCompare(
           secondEmployee[sortKey],
           undefined,
@@ -123,14 +130,7 @@ export function EmployeeTable({
 
         return firstEmployee.id.localeCompare(secondEmployee.id);
       })
-    : employees;
-  const visibleEmployees =
-    rowsPerPage === -1
-      ? sortedEmployees
-      : sortedEmployees.slice(
-          (currentPage - 1) * rowsPerPage,
-          currentPage * rowsPerPage,
-        );
+    : paginatedEmployees;
   const firstVisibleIndex =
     rowsPerPage === -1 ? 0 : (currentPage - 1) * rowsPerPage;
 
