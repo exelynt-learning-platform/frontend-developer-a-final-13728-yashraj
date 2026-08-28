@@ -9,6 +9,7 @@ import {
   FormControl,
   IconButton,
   InputLabel,
+  Link,
   MenuItem,
   Paper,
   Pagination,
@@ -476,6 +477,31 @@ export function App() {
         onClose={() => setNotice("")}
         message={notice}
       />
+      <Paper
+        elevation={3}
+        sx={{
+          position: "fixed",
+          right: { xs: 12, sm: 20 },
+          bottom: { xs: 12, sm: 20 },
+          zIndex: (theme) => theme.zIndex.appBar,
+          px: 1.5,
+          py: 0.75,
+          border: 1,
+          borderColor: "divider",
+        }}
+      >
+        <Link
+          href="https://github.com/YashrajKamble"
+          target="_blank"
+          rel="noopener noreferrer"
+          underline="hover"
+          color="text.secondary"
+          aria-label="Made by Yashraj Kamble, open GitHub profile"
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.8125rem" }, fontWeight: 600 }}
+        >
+          Made by Yashraj Kamble
+        </Link>
+      </Paper>
     </>
   );
 }
