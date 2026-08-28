@@ -871,3 +871,591 @@ Optional features
 Do not add complexity merely to make the project look advanced.
 
 The project should demonstrate that the developer can take a real frontend requirement and turn it into a reliable React application.
+
+# 32. UI Structure
+
+The application should use a clean, professional admin-style layout focused only on Employee Management.
+
+## Main Layout
+
+```text
+App
+│
+├── Header
+│   ├── Application title
+│   └── Optional user/context area
+│
+└── Main Content
+    │
+    └── Employees Page
+        ├── Page title
+        ├── Employee ID Search
+        ├── Add Employee action
+        └── Employee List/Table
+            ├── Name
+            ├── Email
+            ├── Mobile
+            ├── Country
+            └── Actions
+                ├── Edit
+                └── Delete
+```
+
+Do NOT add a permanent sidebar unless a real product requirement requires multiple application modules.
+
+Do NOT add Dashboard, Reports, Settings, Analytics, or unrelated navigation.
+
+---
+
+# 33. Required Screens and UI States
+
+The application should visually support these states:
+
+```text
+1. Employee List - Default
+2. Employee List - Loading
+3. Employee List - Empty
+4. Employee List - API Error
+5. Employee Search - Employee Found
+6. Employee Search - Employee Not Found
+7. Add Employee - Default
+8. Add Employee - Validation Errors
+9. Add Employee - Submitting
+10. Add Employee - API Error
+11. Edit Employee - Prefilled
+12. Edit Employee - Validation Errors
+13. Edit Employee - Saving
+14. Edit Employee - API Error
+15. Delete Confirmation
+16. Delete - Processing
+17. Delete - API Error
+18. Success Feedback
+```
+
+Every state must have a clear visual and interaction behavior.
+
+---
+
+# 34. Employee List UI
+
+The Employee List is the primary screen.
+
+Recommended hierarchy:
+
+```text
+Employees
+    │
+    ├── Search employee by ID
+    │
+    ├── Add Employee
+    │
+    └── Employee Table
+```
+
+Table columns:
+
+```text
+Name | Email | Mobile | Country | Actions
+```
+
+Actions:
+
+```text
+Edit
+Delete
+```
+
+The table should support:
+
+- Clear column hierarchy
+- Readable spacing
+- Row hover state
+- Keyboard focus state
+- Disabled state where appropriate
+- Responsive behavior
+
+Do not add unnecessary columns that are not required.
+
+---
+
+# 35. Add/Edit Form UI
+
+Use one reusable EmployeeForm for both Create and Edit.
+
+```text
+EmployeeForm
+│
+├── Name
+├── Email
+├── Mobile
+├── Country
+├── State
+├── District
+│
+└── Actions
+    ├── Cancel
+    └── Add Employee / Save Changes
+```
+
+Create mode:
+
+```text
+Title: Add Employee
+Primary action: Add Employee
+```
+
+Edit mode:
+
+```text
+Title: Edit Employee
+Primary action: Save Changes
+```
+
+Edit mode must receive existing employee data and pre-populate the form.
+
+Do not create two separate forms with duplicated logic.
+
+---
+
+# 36. Form Layout
+
+Desktop:
+
+```text
+┌─────────────────────────────────────────┐
+│ Add Employee                            │
+│                                         │
+│ Name             Email                  │
+│ [____________]   [____________]         │
+│                                         │
+│ Mobile           Country                │
+│ [____________]   [ Select ▼ ]           │
+│                                         │
+│ State            District               │
+│ [ Select ▼ ]     [ Select ▼ ]           │
+│                                         │
+│              [Cancel] [Add Employee]    │
+└─────────────────────────────────────────┘
+```
+
+Mobile:
+
+```text
+Add Employee
+
+Name
+[________________]
+
+Email
+[________________]
+
+Mobile
+[________________]
+
+Country
+[________________]
+
+State
+[________________]
+
+District
+[________________]
+
+[Cancel]
+[Add Employee]
+```
+
+The form must remain usable without horizontal scrolling.
+
+---
+
+# 37. Delete Confirmation UI
+
+Deleting an employee must require explicit confirmation.
+
+```text
+┌─────────────────────────────────┐
+│ Delete Employee?                │
+│                                 │
+│ Are you sure you want to delete │
+│ John Doe?                       │
+│                                 │
+│ [Cancel]          [Delete]      │
+└─────────────────────────────────┘
+```
+
+The Delete action must be visually identifiable as destructive.
+
+While deletion is processing:
+
+```text
+Delete → Loading → Disabled
+```
+
+Prevent duplicate DELETE requests.
+
+---
+
+# 38. Search UI Flow
+
+Search is specifically based on Employee ID.
+
+```text
+[ Employee ID ] [Search]
+       │
+       ▼
+GET /employee/:id
+       │
+ ┌─────┼─────┐
+ ▼     ▼     ▼
+Found NotFound Error
+```
+
+### Found
+
+Display the employee information clearly.
+
+### Not Found
+
+Display:
+
+```text
+Employee not found.
+
+No employee matches this ID.
+
+[Clear Search]
+```
+
+### Error
+
+Display:
+
+```text
+Unable to search employee.
+
+[Retry]
+```
+
+Do not treat an API error as "Employee not found."
+
+---
+
+# 39. UI State Behavior
+
+Use distinct states:
+
+## Loading
+
+Show skeleton/progress UI rather than a blank page.
+
+## Empty
+
+API succeeded but there are no employees.
+
+```text
+No employees found.
+[Add Employee]
+```
+
+## Error
+
+API request failed.
+
+```text
+Unable to load employees.
+[Retry]
+```
+
+## Not Found
+
+Specific employee search returned no employee.
+
+```text
+Employee not found.
+```
+
+## Success
+
+Use non-blocking feedback:
+
+```text
+Employee added successfully.
+Employee updated successfully.
+Employee deleted successfully.
+```
+
+---
+
+# 40. Interaction Workflow
+
+## Application startup
+
+```text
+Application starts
+      ↓
+EmployeesPage
+      ↓
+Fetch employees + countries
+      ↓
+Loading
+      ↓
+API response
+      ↓
+Success / Empty / Error
+```
+
+## Create
+
+```text
+Click Add Employee
+      ↓
+Open EmployeeForm
+      ↓
+Enter data
+      ↓
+Validate
+      ↓
+POST
+      ↓
+Loading
+      ↓
+Success
+      ↓
+Refresh/invalidate employee data
+      ↓
+Show success feedback
+```
+
+## Edit
+
+```text
+Click Edit
+      ↓
+Load employee
+      ↓
+Pre-populate EmployeeForm
+      ↓
+Modify data
+      ↓
+Validate
+      ↓
+PUT
+      ↓
+Success
+      ↓
+Refresh/invalidate employee data
+```
+
+## Delete
+
+```text
+Click Delete
+      ↓
+Confirmation dialog
+      ↓
+Cancel OR Confirm
+      ↓
+DELETE
+      ↓
+Success
+      ↓
+Refresh/invalidate employee data
+```
+
+## Search
+
+```text
+Enter Employee ID
+      ↓
+Search
+      ↓
+GET /employee/:id
+      ↓
+Found / Not Found / Error
+```
+
+---
+
+# 41. UI Component Hierarchy
+
+Recommended structure:
+
+```text
+EmployeesPage
+│
+├── PageHeader
+│
+├── EmployeeSearch
+│
+├── EmployeeTable
+│   └── EmployeeRow
+│
+├── EmployeeForm
+│   ├── FormField
+│   ├── CountrySelect
+│   ├── StateSelect
+│   └── DistrictSelect
+│
+├── DeleteEmployeeDialog
+│
+├── LoadingState
+├── EmptyState
+├── ErrorState
+└── SuccessSnackbar
+```
+
+Use reusable components where the behavior or presentation is genuinely shared.
+
+Do not create tiny components solely to increase the component count.
+
+---
+
+# 42. UI Design Principles
+
+The UI should be:
+
+- Clean
+- Professional
+- Simple
+- Responsive
+- Accessible
+- Consistent
+- Easy to scan
+- Suitable for an internal employee-management application
+
+Use:
+
+- Consistent spacing
+- Clear typography hierarchy
+- Consistent button hierarchy
+- Clear form labels
+- Clear validation messages
+- Consistent interaction states
+- Adequate whitespace
+
+Avoid:
+
+- Excessive gradients
+- Excessive animations
+- Decorative elements without purpose
+- Unnecessary cards
+- Excessive colors
+- Complex navigation
+
+---
+
+# 43. Responsive Strategy
+
+Desktop:
+
+```text
+Table-first layout
+Two-column form where appropriate
+```
+
+Tablet:
+
+```text
+Reduced spacing
+Responsive table/form
+```
+
+Mobile:
+
+```text
+Single-column form
+Full-width primary actions
+Compact employee list/table
+No page-level horizontal overflow
+```
+
+Do not simply scale down the desktop design.
+
+---
+
+# 44. UX Priority
+
+When making UI decisions, use this priority:
+
+```text
+Requirement correctness
+        ↓
+Usability
+        ↓
+Accessibility
+        ↓
+Responsive behavior
+        ↓
+Visual consistency
+        ↓
+Visual enhancement
+```
+
+A visually impressive feature that makes the required workflow harder to use should not be added.
+
+---
+
+# 45. UI vs Business Logic Boundary
+
+UI components should communicate user intent.
+
+Example:
+
+```text
+EmployeeTable
+     ↓
+onDelete(employee)
+     ↓
+EmployeesPage
+     ↓
+Delete mutation
+```
+
+The table should not directly contain API implementation.
+
+Similarly:
+
+```text
+EmployeeForm
+     ↓
+onSubmit(formData)
+     ↓
+Parent/business logic
+     ↓
+API mutation
+```
+
+Keep presentation and business logic appropriately separated.
+
+---
+
+# 46. Optional UI Enhancements
+
+Only after all assessment requirements are complete, tested, and stable, consider:
+
+- Pagination if the API/data size justifies it
+- Sorting if useful
+- Improved filtering
+- Employee count
+- AI-assisted natural-language employee search
+
+Optional enhancements must not interfere with the required assessment workflow.
+
+---
+
+# 47. Explicit Scope Rule
+
+This project is an Employee Management assessment, not a full enterprise HR platform.
+
+Do not add features merely because they look impressive.
+
+Every additional feature must answer:
+
+1. What user problem does it solve?
+2. Why is it relevant to employee management?
+3. Does it improve the assessment?
+4. Does it justify the additional complexity?
+5. Can it be tested and maintained?
+
+If the answer is unclear, do not add the feature.
