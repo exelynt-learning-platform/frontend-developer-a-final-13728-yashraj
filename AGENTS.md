@@ -1828,3 +1828,17 @@ The application is ready for submission only after all required checks pass.
 ## 61. Verified MockAPI Contract (2026-08-28)
 
 The supplied API was inspected before implementing API-dependent logic. Employee records currently expose `id`, `name`, `email`, `mobile`, `country`, `state`, and `district`, plus unrelated `emailId`, `countryId`, `avatar`, and `createdAt` fields. Country records expose `id`, `country`, `flag`, and `createdAt`. The country endpoint does not expose state/district data; the application must keep those dependent options in a clearly documented local/mock source.
+
+## 62. Implemented UI Visual Standards (2026-08-28)
+
+The application uses a restrained, professional visual system through the centralized MUI theme and existing components.
+
+- Use the theme palette as the source of truth: teal primary actions, slate secondary text, dark slate primary text, light neutral page background, white surfaces, and a restrained red error color.
+- Use the existing Inter/system font stack. Do not add a new font dependency without a clear product requirement and a reliable loading strategy.
+- Use the established heading hierarchy and avoid arbitrary font sizes. Page titles use `h4`; section titles use `h6`; small uppercase context labels use `overline` with the primary color.
+- Use `textTransform: none` for buttons, consistent 40px control height, 8px button radius, and MUI states for hover, focus, disabled, error, and loading behavior.
+- Prefer outlined Paper surfaces for grouped content and keep elevation limited to purposeful floating elements such as the fixed attribution.
+- Keep spacing based on the MUI spacing scale. Use responsive Stack/Grid layouts; forms become one column on small screens and must not cause page-level horizontal overflow.
+- Use semantic labels and content hierarchy before adding decorative UI. Search results use labeled fields and preserve technically meaningful formats: title case for human-readable names/locations, lowercase email, and unchanged IDs/mobile values.
+- Keep destructive actions visually distinct with the error palette and require confirmation. Do not use color alone to communicate status.
+- Any future visual change must be applied consistently across list, search, form, dialog, feedback, and attribution surfaces and must not add an unrelated design pattern.

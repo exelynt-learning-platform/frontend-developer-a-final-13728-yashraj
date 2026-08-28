@@ -12,6 +12,7 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect } from "react";
@@ -118,7 +119,16 @@ export function EmployeeForm({
   );
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <DialogTitle>{employee ? "Edit Employee" : "Add Employee"}</DialogTitle>
+      <DialogTitle sx={{ pb: 1 }}>
+        <Stack gap={0.5}>
+          <Typography variant="overline" color="primary.main">
+            Employee directory
+          </Typography>
+          <Typography variant="h6" component="h2">
+            {employee ? "Edit Employee" : "Add Employee"}
+          </Typography>
+        </Stack>
+      </DialogTitle>
       <DialogContent>
         <Stack gap={2} sx={{ pt: 1 }}>
           <Stack direction={{ xs: "column", sm: "row" }} gap={2}>

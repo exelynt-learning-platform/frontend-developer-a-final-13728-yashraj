@@ -17,7 +17,11 @@ const detailFields: Array<{
   label: string;
   format?: (value: string) => string;
 }> = [
-  { key: "email", label: "Email", format: (value) => value.trim().toLocaleLowerCase() },
+  {
+    key: "email",
+    label: "Email",
+    format: (value) => value.trim().toLocaleLowerCase(),
+  },
   { key: "mobile", label: "Mobile" },
   { key: "country", label: "Country", format: formatWords },
   { key: "state", label: "State", format: formatWords },
@@ -46,7 +50,11 @@ export function EmployeeSearchResult({ employee }: EmployeeSearchResultProps) {
               {formatWords(employee.name)}
             </Typography>
           </Box>
-          <Chip label={`ID: ${employee.id}`} color="primary" variant="outlined" />
+          <Chip
+            label={`ID: ${employee.id}`}
+            color="primary"
+            variant="outlined"
+          />
         </Stack>
         <Divider />
         <Box
@@ -60,11 +68,21 @@ export function EmployeeSearchResult({ employee }: EmployeeSearchResultProps) {
         >
           {detailFields.map(({ key, label, format }) => (
             <Box key={key}>
-              <Typography component="dt" variant="caption" color="text.secondary">
+              <Typography
+                component="dt"
+                variant="caption"
+                color="text.secondary"
+              >
                 {label}
               </Typography>
-              <Typography component="dd" variant="body1" sx={{ m: 0, mt: 0.25 }}>
-                {employee[key] ? format?.(employee[key]) ?? employee[key] : "Not available"}
+              <Typography
+                component="dd"
+                variant="body1"
+                sx={{ m: 0, mt: 0.25, fontWeight: 500 }}
+              >
+                {employee[key]
+                  ? (format?.(employee[key]) ?? employee[key])
+                  : "Not available"}
               </Typography>
             </Box>
           ))}

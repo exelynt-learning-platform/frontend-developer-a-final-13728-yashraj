@@ -33,10 +33,10 @@ export function EmployeeSearch({
       <TextField
         value={id}
         onChange={(event) => setId(event.target.value)}
-        placeholder="Enter employee ID..."
-        size="small"
+        label="Employee ID"
+        placeholder="Enter an employee ID"
         fullWidth
-        inputProps={{ "aria-label": "Employee ID" }}
+        inputProps={{ inputMode: "text" }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">

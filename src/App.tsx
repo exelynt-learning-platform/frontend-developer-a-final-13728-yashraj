@@ -143,7 +143,7 @@ export function EmployeeTable({
   };
 
   return (
-    <Paper sx={{ overflowX: "auto" }}>
+    <Paper variant="outlined" sx={{ overflowX: "auto" }}>
       <Table aria-label="employees" sx={{ minWidth: 680 }}>
         <TableHead>
           <TableRow>
@@ -371,7 +371,10 @@ export function App() {
       <Container maxWidth="lg" sx={{ py: { xs: 3, sm: 5 } }}>
         <Stack gap={3}>
           <Box>
-            <Typography variant="h4" component="h2" gutterBottom>
+            <Typography variant="overline" color="primary.main">
+              Directory
+            </Typography>
+            <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 0.5 }}>
               Employees
             </Typography>
             <Typography color="text.secondary">
@@ -379,9 +382,19 @@ export function App() {
             </Typography>
           </Box>
           <Stack direction="column" gap={2}>
-            <Paper sx={{ p: { xs: 2, sm: 3 }, width: "100%" }}>
+            <Paper
+              variant="outlined"
+              sx={{ p: { xs: 2, sm: 3 }, width: "100%" }}
+            >
               <Stack gap={2}>
-                <Typography variant="h6">Search by employee ID</Typography>
+                <Box>
+                  <Typography variant="overline" color="primary.main">
+                    Quick lookup
+                  </Typography>
+                  <Typography variant="h6" component="h3" sx={{ mt: 0.25 }}>
+                    Search by employee ID
+                  </Typography>
+                </Box>
                 <EmployeeSearch
                   isLoading={searchState.isLoading}
                   onSearch={handleSearch}
@@ -411,7 +424,14 @@ export function App() {
             justifyContent="space-between"
             gap={2}
           >
-            <Typography variant="h6">Employee list</Typography>
+            <Box>
+              <Typography variant="overline" color="primary.main">
+                Directory records
+              </Typography>
+              <Typography variant="h6" component="h3" sx={{ mt: 0.25 }}>
+                Employee list
+              </Typography>
+            </Box>
             <Button variant="contained" onClick={() => setFormEmployee(null)}>
               ＋ Add Employee
             </Button>
