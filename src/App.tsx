@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   AppBar,
@@ -6,7 +6,12 @@ import {
   Button,
   Container,
   Dialog,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Paper,
+  Pagination,
+  Select,
   Snackbar,
   Stack,
   Table,
@@ -32,15 +37,40 @@ import { EmployeeSearch } from "./features/employees/components/EmployeeSearch";
 import { DeleteEmployeeDialog } from "./features/employees/components/DeleteEmployeeDialog";
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
 
+const EMPLOYEES_PER_PAGE = 5;
+
 export function EmployeeTable({
   employees,
   onEdit,
   onDelete,
+  page = 1,
+  onPageChange = () => undefined,
+  rowsPerPage = EMPLOYEES_PER_PAGE,
+  onRowsPerPageChange = () => undefined,
 }: {
   employees: Employee[];
   onEdit: (employee: Employee) => void;
   onDelete: (employee: Employee) => void;
+  page?: number;
+  onPageChange?: (page: number) => void;
+  rowsPerPage?: number;
+  onRowsPerPageChange?: (rowsPerPage: number) => void;
 }) {
+  const totalPages = Math.max(
+    1,
+    rowsPerPage === -1
+      ? 1
+      : Math.ceil(employees.length / rowsPerPage),
+  );
+  const currentPage = Math.min(page, totalPages);
+  const visibleEmployees =
+    rowsPerPage === -1
+      ? employees
+      : employees.slice(
+          (currentPage - 1) * rowsPerPage,
+          currentPage * rowsPerPage,
+        );
+
   return (
     <Paper sx={{ overflowX: "auto" }}>
       <Table aria-label="employees" sx={{ minWidth: 680 }}>
@@ -52,7 +82,7 @@ export function EmployeeTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {employees.map((employee) => (
+          {visibleEmployees.map((employee) => (
             <TableRow hover key={employee.id}>
               <TableCell>{employee.name}</TableCell>
               <TableCell>{employee.email}</TableCell>
@@ -76,6 +106,49 @@ export function EmployeeTable({
           ))}
         </TableBody>
       </Table>
+      <Stack
+        alignItems="center"
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        gap={1.5}
+        sx={{ p: 2, borderTop: 1, borderColor: "divider" }}
+      >
+        <Stack direction="row" alignItems="center" gap={2}>
+          <FormControl size="small" sx={{ minWidth: 130 }}>
+            <InputLabel id="rows-per-page-label">Rows per page</InputLabel>
+            <Select
+              labelId="rows-per-page-label"
+              id="rows-per-page"
+              value={rowsPerPage}
+              label="Rows per page"
+              onChange={(event) =>
+                onRowsPerPageChange(Number(event.target.value))
+              }
+            >
+              {[5, 10, 20].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+              <MenuItem value={-1}>All</MenuItem>
+            </Select>
+          </FormControl>
+          <Typography variant="body2" color="text.secondary">
+            Page {currentPage} of {totalPages}
+          </Typography>
+        </Stack>
+        <Pagination
+          page={currentPage}
+          count={totalPages}
+          onChange={(_, nextPage) => onPageChange(nextPage)}
+          showFirstButton={false}
+          showLastButton={false}
+          siblingCount={0}
+          boundaryCount={1}
+          size="small"
+          aria-label="Employee table pagination"
+        />
+      </Stack>
     </Paper>
   );
 }
@@ -96,7 +169,24 @@ export function App() {
     null,
   );
   const [notice, setNotice] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(EMPLOYEES_PER_PAGE);
   const isFormOpen = formEmployee !== undefined;
+
+  useEffect(() => {
+    const totalPages = Math.max(
+      1,
+      rowsPerPage === -1
+        ? 1
+        : Math.ceil((employeesQuery.data?.length ?? 0) / rowsPerPage),
+    );
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [employeesQuery.data?.length, rowsPerPage]);
+
+  const handleRowsPerPageChange = (nextRowsPerPage: number) => {
+    setRowsPerPage(nextRowsPerPage);
+    setCurrentPage(1);
+  };
   const handleSearch = async (id: string) => {
     setSearchError(null);
     setSearchResult(null);
@@ -228,6 +318,10 @@ export function App() {
             employeesQuery.data.length > 0 && (
               <EmployeeTable
                 employees={employeesQuery.data}
+                page={currentPage}
+                onPageChange={setCurrentPage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleRowsPerPageChange}
                 onEdit={setFormEmployee}
                 onDelete={setDeleteEmployee}
               />
