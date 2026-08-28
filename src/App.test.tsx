@@ -99,4 +99,44 @@ describe("App", () => {
     expect(screen.getByText("Employee 10")).toBeInTheDocument();
     expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
   });
+
+  it("sorts applicable columns and leaves actions unsortable", () => {
+    const employees = [
+      {
+        id: "1",
+        name: "Zoe Employee",
+        email: "zoe@example.com",
+        mobile: "9999999999",
+        country: "United Kingdom",
+        state: "England",
+        district: "London",
+      },
+      {
+        id: "2",
+        name: "Ada Employee",
+        email: "ada@example.com",
+        mobile: "1111111111",
+        country: "India",
+        state: "Delhi",
+        district: "New Delhi",
+      },
+    ];
+
+    render(
+      <EmployeeTable
+        employees={employees}
+        onEdit={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Name" }));
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("Ada Employee");
+    expect(screen.getByText("Actions")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Actions" }),
+    ).not.toBeInTheDocument();
+  });
 });

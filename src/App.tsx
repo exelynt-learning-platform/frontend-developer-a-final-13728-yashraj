@@ -19,6 +19,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  TableSortLabel,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -38,6 +39,15 @@ import { DeleteEmployeeDialog } from "./features/employees/components/DeleteEmpl
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
 
 const EMPLOYEES_PER_PAGE = 5;
+type SortKey = "name" | "email" | "mobile" | "country";
+type SortDirection = "asc" | "desc";
+
+const sortableColumns: Array<{ key: SortKey; label: string }> = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "mobile", label: "Mobile" },
+  { key: "country", label: "Country" },
+];
 
 export function EmployeeTable({
   employees,
@@ -56,27 +66,64 @@ export function EmployeeTable({
   rowsPerPage?: number;
   onRowsPerPageChange?: (rowsPerPage: number) => void;
 }) {
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const totalPages = Math.max(
     1,
     rowsPerPage === -1 ? 1 : Math.ceil(employees.length / rowsPerPage),
   );
   const currentPage = Math.min(page, totalPages);
+  const sortedEmployees = sortKey
+    ? [...employees].sort((firstEmployee, secondEmployee) => {
+        const comparison = firstEmployee[sortKey].localeCompare(
+          secondEmployee[sortKey],
+          undefined,
+          { numeric: sortKey === "mobile", sensitivity: "base" },
+        );
+
+        if (comparison !== 0) {
+          return sortDirection === "asc" ? comparison : -comparison;
+        }
+
+        return firstEmployee.id.localeCompare(secondEmployee.id);
+      })
+    : employees;
   const visibleEmployees =
     rowsPerPage === -1
-      ? employees
-      : employees.slice(
+      ? sortedEmployees
+      : sortedEmployees.slice(
           (currentPage - 1) * rowsPerPage,
           currentPage * rowsPerPage,
         );
+
+  const handleSort = (nextSortKey: SortKey) => {
+    setSortDirection((currentDirection) =>
+      sortKey === nextSortKey && currentDirection === "asc" ? "desc" : "asc",
+    );
+    setSortKey(nextSortKey);
+    onPageChange(1);
+  };
 
   return (
     <Paper sx={{ overflowX: "auto" }}>
       <Table aria-label="employees" sx={{ minWidth: 680 }}>
         <TableHead>
           <TableRow>
-            {["Name", "Email", "Mobile", "Country", "Actions"].map((label) => (
-              <TableCell key={label}>{label}</TableCell>
+            {sortableColumns.map(({ key, label }) => (
+              <TableCell
+                key={key}
+                sortDirection={sortKey === key ? sortDirection : false}
+              >
+                <TableSortLabel
+                  active={sortKey === key}
+                  direction={sortKey === key ? sortDirection : "asc"}
+                  onClick={() => handleSort(key)}
+                >
+                  {label}
+                </TableSortLabel>
+              </TableCell>
             ))}
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
