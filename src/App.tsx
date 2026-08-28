@@ -48,9 +48,7 @@ const formatTitleCase = (value: string) =>
   value
     .trim()
     .toLocaleLowerCase()
-    .replace(/(^|[\s'-])\p{L}/gu, (character) =>
-      character.toLocaleUpperCase(),
-    )
+    .replace(/(^|[\s'-])\p{L}/gu, (character) => character.toLocaleUpperCase())
     .replace(/\s+/g, " ");
 
 const formatNameOrCountry = (value: string) => {
@@ -127,6 +125,8 @@ export function EmployeeTable({
           (currentPage - 1) * rowsPerPage,
           currentPage * rowsPerPage,
         );
+  const firstVisibleIndex =
+    rowsPerPage === -1 ? 0 : (currentPage - 1) * rowsPerPage;
 
   const handleSort = (nextSortKey: SortKey) => {
     setSortDirection((currentDirection) =>
@@ -141,6 +141,7 @@ export function EmployeeTable({
       <Table aria-label="employees" sx={{ minWidth: 680 }}>
         <TableHead>
           <TableRow>
+            <TableCell>Employee Count</TableCell>
             {sortableColumns.map(({ key, label }) => (
               <TableCell
                 key={key}
@@ -159,8 +160,9 @@ export function EmployeeTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {visibleEmployees.map((employee) => (
+          {visibleEmployees.map((employee, index) => (
             <TableRow hover key={employee.id}>
+              <TableCell>{firstVisibleIndex + index + 1}</TableCell>
               <TableCell>{formatNameOrCountry(employee.name)}</TableCell>
               <TableCell>{formatEmail(employee.email)}</TableCell>
               <TableCell>{formatMobile(employee.mobile)}</TableCell>

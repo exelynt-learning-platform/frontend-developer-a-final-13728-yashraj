@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
 import { EmployeeTable } from "./App";
 
@@ -62,6 +62,9 @@ describe("App", () => {
 
     expect(screen.getByText("Employee F")).toBeInTheDocument();
     expect(screen.queryByText("Employee A")).not.toBeInTheDocument();
+    expect(
+      within(screen.getAllByRole("row")[1]).getByText("6"),
+    ).toBeInTheDocument();
     expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
   });
 
