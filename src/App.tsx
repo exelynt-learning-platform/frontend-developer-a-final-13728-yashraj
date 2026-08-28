@@ -39,6 +39,7 @@ import type { Employee } from "./features/employees/types/employee.types";
 import type { EmployeeFormValues } from "./features/employees/schemas/employeeSchema";
 import { EmployeeForm } from "./features/employees/components/EmployeeForm";
 import { EmployeeSearch } from "./features/employees/components/EmployeeSearch";
+import { EmployeeSearchResult } from "./features/employees/components/EmployeeSearchResult";
 import { DeleteEmployeeDialog } from "./features/employees/components/DeleteEmployeeDialog";
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
 import type { Country } from "./features/employees/types/employee.types";
@@ -391,12 +392,7 @@ export function App() {
                 {searchState.isLoading && (
                   <LoadingState label="Searching employee..." />
                 )}
-                {searchResult && (
-                  <Alert severity="success">
-                    <strong>{searchResult.name}</strong> · {searchResult.email}{" "}
-                    · {searchResult.mobile} · {searchResult.country}
-                  </Alert>
-                )}
+                {searchResult && <EmployeeSearchResult employee={searchResult} />}
                 {searchError === "not-found" && (
                   <Alert severity="info">
                     Employee not found. No employee matches this ID.
