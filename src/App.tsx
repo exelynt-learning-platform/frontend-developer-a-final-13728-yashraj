@@ -7,6 +7,7 @@ import {
   Container,
   Dialog,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -20,9 +21,12 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Tooltip,
   Toolbar,
   Typography,
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   useCreateEmployeeMutation,
   useDeleteEmployeeMutation,
@@ -197,17 +201,29 @@ export function EmployeeTable({
                 </Stack>
               </TableCell>
               <TableCell>
-                <Stack direction="row">
-                  <Button size="small" onClick={() => onEdit(employee)}>
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => onDelete(employee)}
+                <Stack direction="row" gap={0.5}>
+                  <Tooltip title={`Edit ${formatNameOrCountry(employee.name)}`}>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      aria-label={`Edit ${formatNameOrCountry(employee.name)}`}
+                      onClick={() => onEdit(employee)}
+                    >
+                      <EditOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip
+                    title={`Delete ${formatNameOrCountry(employee.name)}`}
                   >
-                    Delete
-                  </Button>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      aria-label={`Delete ${formatNameOrCountry(employee.name)}`}
+                      onClick={() => onDelete(employee)}
+                    >
+                      <DeleteOutlineIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
               </TableCell>
             </TableRow>

@@ -25,6 +25,12 @@ describe("App", () => {
     expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
     expect(screen.getByText("ada@example.com")).toBeInTheDocument();
     expect(screen.getByText("India")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Edit Ada Lovelace" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Delete Ada Lovelace" }),
+    ).toBeInTheDocument();
   });
 
   it("shows five employees per page and navigates to the next page", () => {
