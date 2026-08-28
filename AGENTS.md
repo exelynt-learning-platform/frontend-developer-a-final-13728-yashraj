@@ -1824,3 +1824,7 @@ npm run build
 ```
 
 The application is ready for submission only after all required checks pass.
+
+## 61. Verified MockAPI Contract (2026-08-28)
+
+The supplied API was inspected before implementing API-dependent logic. Employee records currently expose `id`, `name`, `email`, `mobile`, `country`, `state`, and `district`, plus unrelated `emailId`, `countryId`, `avatar`, and `createdAt` fields. Country records expose `id`, `country`, `flag`, and `createdAt`. The country endpoint does not expose state/district data; the application must keep those dependent options in a clearly documented local/mock source.
