@@ -58,9 +58,7 @@ export function EmployeeTable({
 }) {
   const totalPages = Math.max(
     1,
-    rowsPerPage === -1
-      ? 1
-      : Math.ceil(employees.length / rowsPerPage),
+    rowsPerPage === -1 ? 1 : Math.ceil(employees.length / rowsPerPage),
   );
   const currentPage = Math.min(page, totalPages);
   const visibleEmployees =
@@ -252,40 +250,37 @@ export function App() {
               Manage your organization&apos;s employee directory.
             </Typography>
           </Box>
-          <Stack
-            direction="column"
-            gap={2}
-          >
-          <Paper sx={{ p: { xs: 2, sm: 3 }, width: "100%" }}>
-            <Stack gap={2}>
-              <Typography variant="h6">Search by employee ID</Typography>
-              <EmployeeSearch
-                isLoading={searchState.isLoading}
-                onSearch={handleSearch}
-                onClear={() => {
-                  setSearchResult(null);
-                  setSearchError(null);
-                }}
-              />
-              {searchState.isLoading && (
-                <LoadingState label="Searching employee..." />
-              )}
-              {searchResult && (
-                <Alert severity="success">
-                  <strong>{searchResult.name}</strong> · {searchResult.email} ·{" "}
-                  {searchResult.mobile} · {searchResult.country}
-                </Alert>
-              )}
-              {searchError === "not-found" && (
-                <Alert severity="info">
-                  Employee not found. No employee matches this ID.
-                </Alert>
-              )}
-              {searchError === "error" && (
-                <ErrorState message="Unable to search employee." />
-              )}
-            </Stack>
-          </Paper>
+          <Stack direction="column" gap={2}>
+            <Paper sx={{ p: { xs: 2, sm: 3 }, width: "100%" }}>
+              <Stack gap={2}>
+                <Typography variant="h6">Search by employee ID</Typography>
+                <EmployeeSearch
+                  isLoading={searchState.isLoading}
+                  onSearch={handleSearch}
+                  onClear={() => {
+                    setSearchResult(null);
+                    setSearchError(null);
+                  }}
+                />
+                {searchState.isLoading && (
+                  <LoadingState label="Searching employee..." />
+                )}
+                {searchResult && (
+                  <Alert severity="success">
+                    <strong>{searchResult.name}</strong> · {searchResult.email}{" "}
+                    · {searchResult.mobile} · {searchResult.country}
+                  </Alert>
+                )}
+                {searchError === "not-found" && (
+                  <Alert severity="info">
+                    Employee not found. No employee matches this ID.
+                  </Alert>
+                )}
+                {searchError === "error" && (
+                  <ErrorState message="Unable to search employee." />
+                )}
+              </Stack>
+            </Paper>
           </Stack>
           <Stack
             alignItems={{ xs: "stretch", sm: "center" }}
