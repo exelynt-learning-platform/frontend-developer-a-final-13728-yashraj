@@ -30,7 +30,7 @@ describe("App", () => {
   it("shows five employees per page and navigates to the next page", () => {
     const employees = Array.from({ length: 6 }, (_, index) => ({
       id: String(index + 1),
-      name: `Employee ${index + 1}`,
+      name: `Employee ${String.fromCharCode(65 + index)}`,
       email: `employee${index + 1}@example.com`,
       mobile: "1234567890",
       country: "India",
@@ -53,22 +53,57 @@ describe("App", () => {
 
     render(<PaginatedTable />);
 
-    expect(screen.getByText("Employee 1")).toBeInTheDocument();
-    expect(screen.getByText("Employee 5")).toBeInTheDocument();
-    expect(screen.queryByText("Employee 6")).not.toBeInTheDocument();
+    expect(screen.getByText("Employee A")).toBeInTheDocument();
+    expect(screen.getByText("Employee E")).toBeInTheDocument();
+    expect(screen.queryByText("Employee F")).not.toBeInTheDocument();
     expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
 
-    expect(screen.getByText("Employee 6")).toBeInTheDocument();
-    expect(screen.queryByText("Employee 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Employee F")).toBeInTheDocument();
+    expect(screen.queryByText("Employee A")).not.toBeInTheDocument();
     expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+  });
+
+  it("formats table values and shows not available for invalid data", () => {
+    render(
+      <EmployeeTable
+        employees={[
+          {
+            id: "1",
+            name: "jOhN   doE",
+            email: " JOHN@EXAMPLE.COM ",
+            mobile: "1234567890",
+            country: "tUrKmEnIsTaN",
+            state: "Ahal",
+            district: "Ashgabat",
+          },
+          {
+            id: "2",
+            name: "12345",
+            email: "invalid-email",
+            mobile: "1234",
+            country: "",
+            state: "",
+            district: "",
+          },
+        ]}
+        onEdit={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.getByText("john@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Turkmenistan")).toBeInTheDocument();
+    expect(screen.getByText("1234567890")).toBeInTheDocument();
+    expect(screen.getAllByText("Not available")).toHaveLength(4);
   });
 
   it("supports changing the rows per page", () => {
     const employees = Array.from({ length: 10 }, (_, index) => ({
       id: String(index + 1),
-      name: `Employee ${index + 1}`,
+      name: `Employee ${String.fromCharCode(65 + index)}`,
       email: `employee${index + 1}@example.com`,
       mobile: "1234567890",
       country: "India",
@@ -96,7 +131,7 @@ describe("App", () => {
     );
     fireEvent.click(screen.getByRole("option", { name: "10" }));
 
-    expect(screen.getByText("Employee 10")).toBeInTheDocument();
+    expect(screen.getByText("Employee J")).toBeInTheDocument();
     expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
   });
 

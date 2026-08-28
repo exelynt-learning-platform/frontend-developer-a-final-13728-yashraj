@@ -37,10 +37,40 @@ import { EmployeeForm } from "./features/employees/components/EmployeeForm";
 import { EmployeeSearch } from "./features/employees/components/EmployeeSearch";
 import { DeleteEmployeeDialog } from "./features/employees/components/DeleteEmployeeDialog";
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
+import type { Country } from "./features/employees/types/employee.types";
 
 const EMPLOYEES_PER_PAGE = 5;
+const NOT_AVAILABLE = "Not available";
 type SortKey = "name" | "email" | "mobile" | "country";
 type SortDirection = "asc" | "desc";
+
+const formatTitleCase = (value: string) =>
+  value
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/(^|[\s'-])\p{L}/gu, (character) =>
+      character.toLocaleUpperCase(),
+    )
+    .replace(/\s+/g, " ");
+
+const formatNameOrCountry = (value: string) => {
+  const normalizedValue = value.trim().replace(/\s+/g, " ");
+  return normalizedValue && /^\p{L}[\p{L}\s'-]*$/u.test(normalizedValue)
+    ? formatTitleCase(normalizedValue)
+    : NOT_AVAILABLE;
+};
+
+const formatEmail = (value: string) => {
+  const normalizedValue = value.trim().toLocaleLowerCase();
+  return normalizedValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue)
+    ? normalizedValue
+    : NOT_AVAILABLE;
+};
+
+const formatMobile = (value: string) => {
+  const normalizedValue = value.trim();
+  return /^\d{10}$/.test(normalizedValue) ? normalizedValue : NOT_AVAILABLE;
+};
 
 const sortableColumns: Array<{ key: SortKey; label: string }> = [
   { key: "name", label: "Name" },
@@ -51,6 +81,7 @@ const sortableColumns: Array<{ key: SortKey; label: string }> = [
 
 export function EmployeeTable({
   employees,
+  countries = [],
   onEdit,
   onDelete,
   page = 1,
@@ -59,6 +90,7 @@ export function EmployeeTable({
   onRowsPerPageChange = () => undefined,
 }: {
   employees: Employee[];
+  countries?: Country[];
   onEdit: (employee: Employee) => void;
   onDelete: (employee: Employee) => void;
   page?: number;
@@ -129,10 +161,39 @@ export function EmployeeTable({
         <TableBody>
           {visibleEmployees.map((employee) => (
             <TableRow hover key={employee.id}>
-              <TableCell>{employee.name}</TableCell>
-              <TableCell>{employee.email}</TableCell>
-              <TableCell>{employee.mobile}</TableCell>
-              <TableCell>{employee.country}</TableCell>
+              <TableCell>{formatNameOrCountry(employee.name)}</TableCell>
+              <TableCell>{formatEmail(employee.email)}</TableCell>
+              <TableCell>{formatMobile(employee.mobile)}</TableCell>
+              <TableCell>
+                <Stack direction="row" alignItems="center" gap={1}>
+                  {countries.find(
+                    (country) =>
+                      country.country.trim().toLowerCase() ===
+                      employee.country.trim().toLowerCase(),
+                  )?.flag && (
+                    <Box
+                      component="img"
+                      src={
+                        countries.find(
+                          (country) =>
+                            country.country.trim().toLowerCase() ===
+                            employee.country.trim().toLowerCase(),
+                        )?.flag
+                      }
+                      alt={`${formatNameOrCountry(employee.country)} flag`}
+                      loading="lazy"
+                      sx={{
+                        width: 32,
+                        height: 22,
+                        objectFit: "cover",
+                        borderRadius: 0.5,
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  {formatNameOrCountry(employee.country)}
+                </Stack>
+              </TableCell>
               <TableCell>
                 <Stack direction="row">
                   <Button size="small" onClick={() => onEdit(employee)}>
