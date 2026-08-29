@@ -1735,10 +1735,9 @@ Keep presentation and business logic appropriately separated.
 
 Only after all assessment requirements are complete, tested, and stable, consider:
 
-- Pagination if the API/data size justifies it
-- Sorting if useful
 - Improved filtering
-- Employee count
+
+Pagination, page-scoped sorting, and employee-count numbering are already implemented and tested. Do not re-implement them or change their behavior without a clear requirement.
 
 Optional enhancements must not interfere with the required assessment workflow.
 
@@ -1842,3 +1841,20 @@ The application uses a restrained, professional visual system through the centra
 - Use semantic labels and content hierarchy before adding decorative UI. Search results use labeled fields and preserve technically meaningful formats: title case for human-readable names/locations, lowercase email, and unchanged IDs/mobile values.
 - Keep destructive actions visually distinct with the error palette and require confirmation. Do not use color alone to communicate status.
 - Any future visual change must be applied consistently across list, search, form, dialog, feedback, and attribution surfaces and must not add an unrelated design pattern.
+
+## 63. Current Implementation Notes (2026-08-29)
+
+- The current application integration is in `src/App.tsx`; `EmployeeTable` and the page-level orchestration remain there. Do not create a new routing or page abstraction unless a real requirement needs it.
+- Employee table pagination is client-side because `GET /employee` returns the complete list. The available page sizes are `5`, `10`, `20`, and `All` (`-1`). Changing the page size resets to page 1; `All` uses one page and displays the complete list.
+- Sorting is applied after pagination. Therefore normal page sizes sort only the selected page, while `All` sorts the complete list. Preserve the regression coverage for repeated `All` selection and page-scoped sorting.
+- `EmployeeForm` and `DeleteEmployeeDialog` are lazy-loaded from `src/App.tsx` and rendered through `Suspense`; preserve this unless bundle or interaction requirements change.
+- API configuration is read only from `VITE_API_BASE_URL` in `.env`. `src/features/employees/api/employeeApi.ts` intentionally has no hard-coded fallback and throws a clear error when the variable is missing. `.env` is ignored by Git; `.env.example` is the committed setup template.
+- Country options are API-backed. State and District remain manually entered fields because the country API does not provide dependent state/district data.
+
+## 64. Current Verification Snapshot (2026-08-29)
+
+- `npm run test:run`: 4 test files passed, 16 tests passed.
+- `npm run lint`: passed.
+- `npm run build`: passed, including TypeScript compilation.
+- `git diff --check`: passed during the latest verified change.
+- Vite reports a non-blocking warning that the main minified chunk exceeds 500 kB. Do not introduce bundle splitting or dependency changes solely for this warning without measuring the impact.
