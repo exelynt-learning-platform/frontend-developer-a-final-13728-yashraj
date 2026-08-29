@@ -26,6 +26,25 @@ describe("employeeSchema", () => {
     ).toBe(true);
   });
 
+  it("rejects names containing digits or unsupported symbols", () => {
+    const validValues = {
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      mobile: "1234567890",
+      country: "India",
+      state: "Delhi",
+      district: "New Delhi",
+    };
+
+    expect(
+      employeeSchema.safeParse({ ...validValues, name: "Ada123" }).success,
+    ).toBe(false);
+    expect(
+      employeeSchema.safeParse({ ...validValues, name: "Ada@Lovelace" })
+        .success,
+    ).toBe(false);
+  });
+
   it("rejects non-text and overlong state or district values", () => {
     const baseValues = {
       name: "Ada Lovelace",

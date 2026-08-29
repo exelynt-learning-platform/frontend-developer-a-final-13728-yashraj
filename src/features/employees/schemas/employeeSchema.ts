@@ -21,7 +21,11 @@ export const employeeSchema = z.object({
     .string()
     .trim()
     .min(2, "Name must be at least 2 characters.")
-    .max(80, "Name cannot exceed 80 characters."),
+    .max(80, "Name cannot exceed 80 characters.")
+    .regex(
+      /^\p{L}[\p{L}\s.'-]*$/u,
+      "Name can contain letters, spaces, apostrophes, hyphens, or periods only.",
+    ),
   email: z
     .string()
     .trim()

@@ -34,7 +34,7 @@ export function ErrorState({
       action={
         onRetry ? (
           <Button color="inherit" onClick={onRetry}>
-            Retry
+            Try again
           </Button>
         ) : undefined
       }
