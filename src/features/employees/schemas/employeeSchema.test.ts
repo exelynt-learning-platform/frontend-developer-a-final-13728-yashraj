@@ -25,4 +25,38 @@ describe("employeeSchema", () => {
       }).success,
     ).toBe(true);
   });
+
+  it("rejects non-text and overlong state or district values", () => {
+    const baseValues = {
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      mobile: "1234567890",
+      country: "India",
+      state: "Delhi",
+      district: "New Delhi",
+    };
+
+    expect(
+      employeeSchema.safeParse({ ...baseValues, state: "Delhi 2" }).success,
+    ).toBe(false);
+    expect(
+      employeeSchema.safeParse({
+        ...baseValues,
+        district: "D".repeat(81),
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts common geographic punctuation in state and district", () => {
+    expect(
+      employeeSchema.safeParse({
+        name: "Ada Lovelace",
+        email: "ada@example.com",
+        mobile: "1234567890",
+        country: "India",
+        state: "St. John's-West",
+        district: "New Delhi",
+      }).success,
+    ).toBe(true);
+  });
 });

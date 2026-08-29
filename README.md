@@ -12,7 +12,7 @@ npm run dev
 
 Set `VITE_API_BASE_URL` in `.env` to the provided MockAPI base URL. The application uses the verified MockAPI contract: employee records contain `id`, `name`, `email`, `mobile`, `country`, `state`, and `district`; country records contain `id` and `country`.
 
-The app includes employee listing, ID search with not-found handling, add/edit forms, delete confirmation, RTK Query cache invalidation, responsive MUI UI states, and local dependent state/district options. The country API does not provide state/district data, so those options are intentionally local rather than inferred from the API.
+The app includes employee listing, ID search with not-found handling, add/edit forms, delete confirmation, RTK Query cache invalidation, and responsive MUI UI states. The country API does not provide state/district data, so Country uses API-backed options while State and District are manually entered text fields.
 
 Tests use MSW and never depend on the live API.
 

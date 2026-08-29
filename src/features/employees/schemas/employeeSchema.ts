@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+export const LOCATION_MAX_LENGTH = 80;
+const locationSchema = (label: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, `${label} is required.`)
+    .min(2, `${label} must be at least 2 characters.`)
+    .max(
+      LOCATION_MAX_LENGTH,
+      `${label} cannot exceed ${LOCATION_MAX_LENGTH} characters.`,
+    )
+    .regex(
+      /^\p{L}[\p{L}\s.'-]*$/u,
+      `${label} can contain letters, spaces, apostrophes, hyphens, or periods only.`,
+    );
+
 export const employeeSchema = z.object({
   name: z
     .string()
@@ -16,8 +32,8 @@ export const employeeSchema = z.object({
     .trim()
     .regex(/^\d{10}$/, "Mobile must contain exactly 10 digits."),
   country: z.string().min(1, "Country is required."),
-  state: z.string().min(1, "State is required."),
-  district: z.string().min(1, "District is required."),
+  state: locationSchema("State"),
+  district: locationSchema("District"),
 });
 
 export type EmployeeFormValues = z.infer<typeof employeeSchema>;

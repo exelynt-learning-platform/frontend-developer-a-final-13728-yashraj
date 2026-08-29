@@ -15,13 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { useEffect } from "react";
 import type { Country, Employee } from "../types/employee.types";
 import {
   employeeSchema,
+  LOCATION_MAX_LENGTH,
   type EmployeeFormValues,
 } from "../schemas/employeeSchema";
-import { getDistricts, getStates } from "../utils/locationData";
 
 interface Props {
   employee?: Employee | null;
@@ -40,7 +39,7 @@ export function EmployeeForm({
   onSubmit,
   onCancel,
 }: Props) {
-  const { control, handleSubmit, watch, setValue } =
+  const { control, handleSubmit } =
     useForm<EmployeeFormValues>({
       resolver: zodResolver(employeeSchema),
       defaultValues: {
@@ -52,20 +51,6 @@ export function EmployeeForm({
         district: employee?.district ?? "",
       },
     });
-  const country = watch("country");
-  const state = watch("state");
-  const states = getStates(country, employee?.state);
-  const districts = getDistricts(country, state, employee?.district);
-  useEffect(() => {
-    if (state && !states.includes(state)) {
-      setValue("state", "");
-      setValue("district", "");
-    }
-  }, [setValue, state, states]);
-  useEffect(() => {
-    const district = watch("district");
-    if (district && !districts.includes(district)) setValue("district", "");
-  }, [districts, setValue, watch]);
   const field = (
     name: keyof EmployeeFormValues,
     label: string,
@@ -85,6 +70,8 @@ export function EmployeeForm({
           inputProps={
             name === "mobile"
               ? { inputMode: "numeric", maxLength: 10 }
+              : name === "state" || name === "district"
+                ? { inputMode: "text", maxLength: LOCATION_MAX_LENGTH }
               : undefined
           }
         />
@@ -92,7 +79,7 @@ export function EmployeeForm({
     />
   );
   const select = (
-    name: "country" | "state" | "district",
+    name: "country",
     label: string,
     options: string[],
   ) => (
@@ -144,8 +131,8 @@ export function EmployeeForm({
             )}
           </Stack>
           <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-            {select("state", "State", states)}
-            {select("district", "District", districts)}
+            {field("state", "State")}
+            {field("district", "District")}
           </Stack>
           {error && <Alert severity="error">{error}</Alert>}
         </Stack>
