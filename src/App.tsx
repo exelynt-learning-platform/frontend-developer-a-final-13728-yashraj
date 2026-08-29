@@ -143,7 +143,7 @@ export function EmployeeTable({
   };
 
   return (
-    <Paper variant="outlined" sx={{ overflowX: "auto" }}>
+    <Paper variant="outlined" sx={{ overflowX: "auto", mb: { xs: 8, sm: 0 } }}>
       <Table aria-label="employees" sx={{ minWidth: 680 }}>
         <TableHead>
           <TableRow>
@@ -374,7 +374,12 @@ export function App() {
             <Typography variant="overline" color="primary.main">
               Directory
             </Typography>
-            <Typography variant="h4" component="h2" gutterBottom sx={{ mt: 0.5 }}>
+            <Typography
+              variant="h4"
+              component="h2"
+              gutterBottom
+              sx={{ mt: 0.5 }}
+            >
               Employees
             </Typography>
             <Typography color="text.secondary">
@@ -406,7 +411,9 @@ export function App() {
                 {searchState.isLoading && (
                   <LoadingState label="Searching employee..." />
                 )}
-                {searchResult && <EmployeeSearchResult employee={searchResult} />}
+                {searchResult && (
+                  <EmployeeSearchResult employee={searchResult} />
+                )}
                 {searchError === "not-found" && (
                   <Alert severity="info">
                     Employee not found. No employee matches this ID.
