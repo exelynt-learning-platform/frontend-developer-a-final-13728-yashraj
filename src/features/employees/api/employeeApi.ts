@@ -1,9 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Country, Employee, EmployeeInput } from "../types/employee.types";
 
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ??
-  "https://669b3f09276e45187d34eb4e.mockapi.io/api/v1";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    "VITE_API_BASE_URL is not configured. Add it to the project's .env file.",
+  );
+}
 
 export const employeeApi = createApi({
   reducerPath: "employeeApi",
