@@ -144,6 +144,52 @@ describe("App", () => {
     expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
   });
 
+  it("keeps all employees visible when switching to All more than once", () => {
+    const employees = Array.from({ length: 6 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Employee ${String.fromCharCode(65 + index)}`,
+      email: `employee${index + 1}@example.com`,
+      mobile: "1234567890",
+      country: "India",
+      state: "Delhi",
+      district: "New Delhi",
+    }));
+
+    function PaginatedTable() {
+      const [rowsPerPage, setRowsPerPage] = useState(5);
+      return (
+        <EmployeeTable
+          employees={employees}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={setRowsPerPage}
+          onEdit={() => undefined}
+          onDelete={() => undefined}
+        />
+      );
+    }
+
+    render(<PaginatedTable />);
+
+    const selectRowsPerPage = (option: string) => {
+      fireEvent.mouseDown(
+        screen.getByRole("combobox", { name: "Rows per page" }),
+      );
+      fireEvent.click(screen.getByRole("option", { name: option }));
+    };
+
+    selectRowsPerPage("All");
+    expect(screen.getByText("Employee F")).toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+
+    selectRowsPerPage("5");
+    expect(screen.queryByText("Employee F")).not.toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+
+    selectRowsPerPage("All");
+    expect(screen.getByText("Employee F")).toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 1")).toBeInTheDocument();
+  });
+
   it("sorts applicable columns and leaves actions unsortable", () => {
     const employees = [
       {

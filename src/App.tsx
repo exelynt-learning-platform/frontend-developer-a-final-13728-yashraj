@@ -62,28 +62,28 @@ type SortKey = "name" | "email" | "mobile" | "country";
 type SortDirection = "asc" | "desc";
 
 const formatTitleCase = (value: string) =>
-  value
+  (value ?? "")
     .trim()
     .toLocaleLowerCase()
     .replace(/(^|[\s'-])\p{L}/gu, (character) => character.toLocaleUpperCase())
     .replace(/\s+/g, " ");
 
 const formatNameOrCountry = (value: string) => {
-  const normalizedValue = value.trim().replace(/\s+/g, " ");
+  const normalizedValue = (value ?? "").trim().replace(/\s+/g, " ");
   return normalizedValue && /^\p{L}[\p{L}\s'-]*$/u.test(normalizedValue)
     ? formatTitleCase(normalizedValue)
     : NOT_AVAILABLE;
 };
 
 const formatEmail = (value: string) => {
-  const normalizedValue = value.trim().toLocaleLowerCase();
+  const normalizedValue = (value ?? "").trim().toLocaleLowerCase();
   return normalizedValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue)
     ? normalizedValue
     : NOT_AVAILABLE;
 };
 
 const formatMobile = (value: string) => {
-  const normalizedValue = value.trim();
+  const normalizedValue = (value ?? "").trim();
   return /^\d{10}$/.test(normalizedValue) ? normalizedValue : NOT_AVAILABLE;
 };
 
@@ -128,9 +128,9 @@ export function EmployeeTable({
           currentPage * rowsPerPage,
         );
   const visibleEmployees = sortKey
-    ? [...paginatedEmployees].sort((firstEmployee, secondEmployee) => {
-        const comparison = firstEmployee[sortKey].localeCompare(
-          secondEmployee[sortKey],
+      ? [...paginatedEmployees].sort((firstEmployee, secondEmployee) => {
+        const comparison = (firstEmployee[sortKey] ?? "").localeCompare(
+          secondEmployee[sortKey] ?? "",
           undefined,
           { numeric: sortKey === "mobile", sensitivity: "base" },
         );
@@ -139,7 +139,7 @@ export function EmployeeTable({
           return sortDirection === "asc" ? comparison : -comparison;
         }
 
-        return firstEmployee.id.localeCompare(secondEmployee.id);
+        return (firstEmployee.id ?? "").localeCompare(secondEmployee.id ?? "");
       })
     : paginatedEmployees;
   const firstVisibleIndex =
@@ -187,16 +187,16 @@ export function EmployeeTable({
                 <Stack direction="row" alignItems="center" gap={1}>
                   {countries.find(
                     (country) =>
-                      country.country.trim().toLowerCase() ===
-                      employee.country.trim().toLowerCase(),
+                      (country.country ?? "").trim().toLowerCase() ===
+                      (employee.country ?? "").trim().toLowerCase(),
                   )?.flag && (
                     <Box
                       component="img"
                       src={
                         countries.find(
                           (country) =>
-                            country.country.trim().toLowerCase() ===
-                            employee.country.trim().toLowerCase(),
+                            (country.country ?? "").trim().toLowerCase() ===
+                            (employee.country ?? "").trim().toLowerCase(),
                         )?.flag
                       }
                       alt={`${formatNameOrCountry(employee.country)} flag`}
