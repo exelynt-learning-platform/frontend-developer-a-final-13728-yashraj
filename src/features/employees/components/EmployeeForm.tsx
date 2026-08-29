@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
+import { ErrorState } from "../../../components/common/AsyncState";
 import type { Country, Employee } from "../types/employee.types";
 import {
   employeeSchema,
@@ -27,6 +28,9 @@ interface Props {
   countries: Country[];
   isSaving: boolean;
   error?: string;
+  countriesLoading?: boolean;
+  countriesError?: boolean;
+  onRetryCountries?: () => void;
   onSubmit: (values: EmployeeFormValues) => void;
   onCancel: () => void;
 }
@@ -36,21 +40,23 @@ export function EmployeeForm({
   countries,
   isSaving,
   error,
+  countriesLoading = false,
+  countriesError = false,
+  onRetryCountries,
   onSubmit,
   onCancel,
 }: Props) {
-  const { control, handleSubmit } =
-    useForm<EmployeeFormValues>({
-      resolver: zodResolver(employeeSchema),
-      defaultValues: {
-        name: employee?.name ?? "",
-        email: employee?.email ?? "",
-        mobile: employee?.mobile ?? "",
-        country: employee?.country ?? "",
-        state: employee?.state ?? "",
-        district: employee?.district ?? "",
-      },
-    });
+  const { control, handleSubmit } = useForm<EmployeeFormValues>({
+    resolver: zodResolver(employeeSchema),
+    defaultValues: {
+      name: employee?.name ?? "",
+      email: employee?.email ?? "",
+      mobile: employee?.mobile ?? "",
+      country: employee?.country ?? "",
+      state: employee?.state ?? "",
+      district: employee?.district ?? "",
+    },
+  });
   const field = (
     name: keyof EmployeeFormValues,
     label: string,
@@ -72,17 +78,13 @@ export function EmployeeForm({
               ? { inputMode: "numeric", maxLength: 10 }
               : name === "state" || name === "district"
                 ? { inputMode: "text", maxLength: LOCATION_MAX_LENGTH }
-              : undefined
+                : undefined
           }
         />
       )}
     />
   );
-  const select = (
-    name: "country",
-    label: string,
-    options: string[],
-  ) => (
+  const select = (name: "country", label: string, options: string[]) => (
     <Controller
       name={name}
       control={control}
@@ -134,7 +136,27 @@ export function EmployeeForm({
             {field("state", "State")}
             {field("district", "District")}
           </Stack>
-          {error && <Alert severity="error">{error}</Alert>}
+          {countriesLoading && (
+            <Alert severity="info">Loading countries...</Alert>
+          )}
+          {countriesError && (
+            <ErrorState
+              message="Unable to load countries."
+              onRetry={onRetryCountries}
+            />
+          )}
+          {error && (
+            <Alert
+              severity="error"
+              action={
+                <Button color="inherit" type="submit" disabled={isSaving}>
+                  Try again
+                </Button>
+              }
+            >
+              {error}
+            </Alert>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions

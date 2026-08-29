@@ -6,6 +6,7 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import { ErrorState } from "../../../components/common/AsyncState";
 import type { Employee } from "../types/employee.types";
 
 export function DeleteEmployeeDialog({
@@ -13,11 +14,13 @@ export function DeleteEmployeeDialog({
   isDeleting,
   onCancel,
   onConfirm,
+  error,
 }: {
   employee: Employee | null;
   isDeleting: boolean;
   onCancel: () => void;
   onConfirm: () => void;
+  error?: string;
 }) {
   return (
     <Dialog
@@ -30,6 +33,7 @@ export function DeleteEmployeeDialog({
         <Typography>
           Are you sure you want to delete {employee?.name}?
         </Typography>
+        {error && <ErrorState message={error} onRetry={onConfirm} />}
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel} disabled={isDeleting}>
