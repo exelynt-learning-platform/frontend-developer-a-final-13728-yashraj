@@ -19,6 +19,8 @@ export function EmployeeSearch({
   onClear,
 }: EmployeeSearchProps) {
   const [id, setId] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const isNumericId = /^\d+$/.test(id.trim());
 
   return (
     <Stack
@@ -27,16 +29,30 @@ export function EmployeeSearch({
       gap={1.5}
       onSubmit={(event) => {
         event.preventDefault();
-        if (id.trim()) onSearch(id.trim());
+        const trimmedId = id.trim();
+        if (!trimmedId) return;
+        if (!isNumericId) {
+          setValidationError(
+            "Enter a numeric employee ID, not a name or text.",
+          );
+          return;
+        }
+        setValidationError("");
+        onSearch(trimmedId);
       }}
     >
       <TextField
         value={id}
-        onChange={(event) => setId(event.target.value)}
+        onChange={(event) => {
+          setId(event.target.value);
+          setValidationError("");
+        }}
         label="Employee ID"
         placeholder="Enter an employee ID"
         fullWidth
-        inputProps={{ inputMode: "text" }}
+        error={!!validationError}
+        helperText={validationError}
+        inputProps={{ inputMode: "numeric" }}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -64,6 +80,7 @@ export function EmployeeSearch({
         variant="outlined"
         onClick={() => {
           setId("");
+          setValidationError("");
           onClear();
         }}
         disabled={!id}
