@@ -25,9 +25,11 @@ import {
   type EmployeeFormValues,
 } from "../schemas/employeeSchema";
 
+type EmployeeTextFieldName = "name" | "email" | "mobile" | "state" | "district";
+
 interface EmployeeTextFieldProps {
   control: Control<EmployeeFormValues>;
-  name: keyof EmployeeFormValues;
+  name: EmployeeTextFieldName;
   label: string;
   type?: string;
 }
