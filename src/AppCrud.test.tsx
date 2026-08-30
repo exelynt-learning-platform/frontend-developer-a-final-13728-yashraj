@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App } from "./App";
 
@@ -48,6 +48,7 @@ const mocks = vi.hoisted(() => ({
     error: undefined as unknown,
   },
   remove: vi.fn(() => ({ unwrap: vi.fn().mockResolvedValue({}) })),
+  removeState: { isLoading: false },
 }));
 
 vi.mock("./features/employees/api/employeeApi", () => ({
@@ -56,7 +57,7 @@ vi.mock("./features/employees/api/employeeApi", () => ({
   useLazyGetEmployeeByIdQuery: () => [mocks.search, { isLoading: false }],
   useCreateEmployeeMutation: () => [mocks.create, mocks.createState],
   useUpdateEmployeeMutation: () => [mocks.update, mocks.updateState],
-  useDeleteEmployeeMutation: () => [mocks.remove, { isLoading: false }],
+  useDeleteEmployeeMutation: () => [mocks.remove, mocks.removeState],
 }));
 
 function renderApp() {
@@ -90,6 +91,7 @@ describe("App CRUD UI flows", () => {
     mocks.remove.mockClear();
     mocks.createState.error = undefined;
     mocks.updateState.error = undefined;
+    mocks.removeState.isLoading = false;
   });
 
   it("submits a valid Add Employee form and shows success feedback", async () => {
@@ -328,6 +330,36 @@ describe("App CRUD UI flows", () => {
     expect(
       await screen.findByText("Employee deleted successfully."),
     ).toBeInTheDocument();
+  });
+
+  it("prevents duplicate delete requests while deletion is in progress", async () => {
+    const user = userEvent.setup();
+    let resolveDelete!: () => void;
+    mocks.remove.mockImplementationOnce(() => ({
+      unwrap: vi.fn(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveDelete = resolve;
+          }),
+      ),
+    }));
+    const { rerender } = renderApp();
+
+    await user.click(
+      screen.getByRole("button", { name: "Delete Ada Lovelace" }),
+    );
+    await screen.findByRole("heading", { name: "Delete Employee?" });
+    await user.click(screen.getByRole("button", { name: "Delete" }));
+
+    mocks.removeState.isLoading = true;
+    rerender(<App />);
+    const deletingButton = screen.getByRole("button", { name: "Deleting..." });
+    expect(deletingButton).toBeDisabled();
+    expect(mocks.remove).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      resolveDelete();
+    });
   });
 
   it("keeps delete confirmation open and retries after a delete failure", async () => {
