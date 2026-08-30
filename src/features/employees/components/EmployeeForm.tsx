@@ -46,8 +46,9 @@ export function EmployeeForm({
   onSubmit,
   onCancel,
 }: Props) {
-  const { control, handleSubmit } = useForm<EmployeeFormValues>({
+  const { control, handleSubmit, watch } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
+    mode: "onChange",
     defaultValues: {
       name: employee?.name ?? "",
       email: employee?.email ?? "",
@@ -57,6 +58,9 @@ export function EmployeeForm({
       district: employee?.district ?? "",
     },
   });
+  const isNameAndEmailValid =
+    employeeSchema.shape.name.safeParse(watch("name")).success &&
+    employeeSchema.shape.email.safeParse(watch("email")).success;
   const field = (
     name: keyof EmployeeFormValues,
     label: string,
@@ -170,7 +174,11 @@ export function EmployeeForm({
         <Button onClick={onCancel} disabled={isSaving}>
           Cancel
         </Button>
-        <Button type="submit" variant="contained" disabled={isSaving}>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isSaving || !isNameAndEmailValid}
+        >
           {isSaving ? "Saving..." : employee ? "Save Changes" : "Add Employee"}
         </Button>
       </DialogActions>

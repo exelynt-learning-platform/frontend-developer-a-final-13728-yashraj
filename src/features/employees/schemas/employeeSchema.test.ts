@@ -45,6 +45,34 @@ describe("employeeSchema", () => {
     ).toBe(false);
   });
 
+  it("requires title-case name words and lowercase email", () => {
+    const validValues = {
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      mobile: "1234567890",
+      country: "India",
+      state: "Delhi",
+      district: "New Delhi",
+    };
+
+    expect(
+      employeeSchema.safeParse({ ...validValues, name: "ada Lovelace" })
+        .success,
+    ).toBe(false);
+    expect(
+      employeeSchema.safeParse({ ...validValues, name: "Ada lovelace" })
+        .success,
+    ).toBe(false);
+    expect(
+      employeeSchema.safeParse({ ...validValues, email: "Ada@example.com" })
+        .success,
+    ).toBe(false);
+    expect(
+      employeeSchema.safeParse({ ...validValues, email: "ada@Example.com" })
+        .success,
+    ).toBe(false);
+  });
+
   it("rejects non-text and overlong state or district values", () => {
     const baseValues = {
       name: "Ada Lovelace",
