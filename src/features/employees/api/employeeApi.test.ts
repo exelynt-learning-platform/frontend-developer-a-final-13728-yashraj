@@ -31,6 +31,19 @@ describe("employeeApi", () => {
     expect(result.data).toEqual([{ id: "1", country: "India" }]);
   });
 
+  it("exposes employee-by-ID not-found responses", async () => {
+    server.use(
+      http.get(`${API_BASE_URL}/employee/404`, () =>
+        HttpResponse.json({ message: "Employee not found." }, { status: 404 }),
+      ),
+    );
+    const result = await store.dispatch(
+      employeeApi.endpoints.getEmployeeById.initiate("404"),
+    );
+
+    expect(result.error).toMatchObject({ status: 404 });
+  });
+
   it("supports create, update, and delete mutations", async () => {
     server.use(
       http.post(`${API_BASE_URL}/employee`, async () =>

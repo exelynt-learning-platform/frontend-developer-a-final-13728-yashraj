@@ -262,4 +262,43 @@ describe("App", () => {
     expect(rows[1]).toHaveTextContent("Ada Employee");
     expect(screen.queryByText("Aaron Employee")).not.toBeInTheDocument();
   });
+
+  it("toggles sort direction and keeps equal values deterministic", () => {
+    const employees = [
+      {
+        id: "2",
+        name: "Same Employee",
+        email: "second@example.com",
+        mobile: "2222222222",
+        country: "India",
+        state: "Delhi",
+        district: "New Delhi",
+      },
+      {
+        id: "1",
+        name: "Same Employee",
+        email: "first@example.com",
+        mobile: "1111111111",
+        country: "India",
+        state: "Delhi",
+        district: "New Delhi",
+      },
+    ];
+
+    render(
+      <EmployeeTable
+        employees={employees}
+        onEdit={() => undefined}
+        onDelete={() => undefined}
+      />,
+    );
+
+    const nameSort = screen.getByRole("button", { name: "Name" });
+    fireEvent.click(nameSort);
+    fireEvent.click(nameSort);
+
+    const rows = screen.getAllByRole("row");
+    expect(rows[1]).toHaveTextContent("1");
+    expect(rows[2]).toHaveTextContent("2");
+  });
 });
