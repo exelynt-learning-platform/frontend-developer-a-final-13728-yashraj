@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
 import { EMPLOYEES_PER_PAGE } from "./features/employees/constants";
-import { EmployeeTable } from "./App";
+import { EmployeeTable } from "./features/employees/components/EmployeeTable";
 
 describe("App", () => {
   it("renders employee details in the list table", () => {

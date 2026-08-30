@@ -20,6 +20,7 @@ import { ErrorState } from "../../../components/common/AsyncState";
 import type { Country, Employee } from "../types/employee.types";
 import {
   employeeSchema,
+  employeeIdentitySchema,
   LOCATION_MAX_LENGTH,
   type EmployeeFormValues,
 } from "../schemas/employeeSchema";
@@ -131,9 +132,10 @@ export function EmployeeForm({
     control,
     name: ["name", "email"],
   });
-  const isNameAndEmailValid =
-    employeeSchema.shape.name.safeParse(name).success &&
-    employeeSchema.shape.email.safeParse(email).success;
+  const isNameAndEmailValid = employeeIdentitySchema.safeParse({
+    name,
+    email,
+  }).success;
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <DialogTitle sx={{ pb: 1 }}>

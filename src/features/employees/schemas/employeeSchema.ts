@@ -46,3 +46,8 @@ export const employeeSchema = z.object({
 });
 
 export type EmployeeFormValues = z.infer<typeof employeeSchema>;
+
+export const employeeIdentitySchema = employeeSchema.pick({
+  name: true,
+  email: true,
+});

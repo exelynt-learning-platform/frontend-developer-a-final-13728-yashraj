@@ -20,7 +20,11 @@ import {
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { EMPLOYEES_PER_PAGE } from "../constants";
+import {
+  EMPLOYEE_TABLE_COLUMNS,
+  EMPLOYEES_PER_PAGE,
+  PAGE_SIZE_OPTIONS,
+} from "../constants";
 import type { Employee, Country } from "../types/employee.types";
 import {
   formatEmail,
@@ -28,15 +32,8 @@ import {
   formatNameOrCountry,
 } from "../utils/formatEmployeeValue";
 
-type SortKey = "name" | "email" | "mobile" | "country";
+type SortKey = (typeof EMPLOYEE_TABLE_COLUMNS)[number]["key"];
 type SortDirection = "asc" | "desc";
-
-const sortableColumns: Array<{ key: SortKey; label: string }> = [
-  { key: "name", label: "Name" },
-  { key: "email", label: "Email" },
-  { key: "mobile", label: "Mobile" },
-  { key: "country", label: "Country" },
-];
 
 interface EmployeeTableProps {
   employees: Employee[];
@@ -105,7 +102,7 @@ export function EmployeeTable({
         <TableHead>
           <TableRow>
             <TableCell>Employee Count</TableCell>
-            {sortableColumns.map(({ key, label }) => (
+            {EMPLOYEE_TABLE_COLUMNS.map(({ key, label }) => (
               <TableCell
                 key={key}
                 sortDirection={sortKey === key ? sortDirection : false}
@@ -206,7 +203,7 @@ export function EmployeeTable({
                 onRowsPerPageChange(Number(event.target.value))
               }
             >
-              {[5, 10, 20].map((option) => (
+              {PAGE_SIZE_OPTIONS.map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
