@@ -1,16 +1,10 @@
 import { Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
 import type { Employee } from "../types/employee.types";
+import { normalizeEmail, normalizeWords } from "../utils/formatEmployeeValue";
 
 interface EmployeeSearchResultProps {
   employee: Employee;
 }
-
-const formatWords = (value: string) =>
-  value
-    .trim()
-    .toLocaleLowerCase()
-    .replace(/(^|[\s'-])\p{L}/gu, (character) => character.toLocaleUpperCase())
-    .replace(/\s+/g, " ");
 
 const detailFields: Array<{
   key: keyof Employee;
@@ -20,12 +14,12 @@ const detailFields: Array<{
   {
     key: "email",
     label: "Email",
-    format: (value) => value.trim().toLocaleLowerCase(),
+    format: normalizeEmail,
   },
   { key: "mobile", label: "Mobile" },
-  { key: "country", label: "Country", format: formatWords },
-  { key: "state", label: "State", format: formatWords },
-  { key: "district", label: "District", format: formatWords },
+  { key: "country", label: "Country", format: normalizeWords },
+  { key: "state", label: "State", format: normalizeWords },
+  { key: "district", label: "District", format: normalizeWords },
 ];
 
 export function EmployeeSearchResult({ employee }: EmployeeSearchResultProps) {
@@ -47,7 +41,7 @@ export function EmployeeSearchResult({ employee }: EmployeeSearchResultProps) {
               Employee details
             </Typography>
             <Typography variant="h6" component="h3">
-              {formatWords(employee.name)}
+              {normalizeWords(employee.name)}
             </Typography>
           </Box>
           <Chip

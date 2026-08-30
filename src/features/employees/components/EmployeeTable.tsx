@@ -21,32 +21,15 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import type { Employee, Country } from "../types/employee.types";
+import {
+  formatEmail,
+  formatNameOrCountry,
+  NOT_AVAILABLE,
+} from "../utils/formatEmployeeValue";
 
 const EMPLOYEES_PER_PAGE = 5;
-const NOT_AVAILABLE = "Not available";
 type SortKey = "name" | "email" | "mobile" | "country";
 type SortDirection = "asc" | "desc";
-
-const formatTitleCase = (value: string) =>
-  (value ?? "")
-    .trim()
-    .toLocaleLowerCase()
-    .replace(/(^|[\s'-])\p{L}/gu, (character) => character.toLocaleUpperCase())
-    .replace(/\s+/g, " ");
-
-const formatNameOrCountry = (value: string) => {
-  const normalizedValue = (value ?? "").trim().replace(/\s+/g, " ");
-  return normalizedValue && /^\p{L}[\p{L}\s'-]*$/u.test(normalizedValue)
-    ? formatTitleCase(normalizedValue)
-    : NOT_AVAILABLE;
-};
-
-const formatEmail = (value: string) => {
-  const normalizedValue = (value ?? "").trim().toLocaleLowerCase();
-  return normalizedValue && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedValue)
-    ? normalizedValue
-    : NOT_AVAILABLE;
-};
 
 const formatMobile = (value: string) => {
   const normalizedValue = (value ?? "").trim();
