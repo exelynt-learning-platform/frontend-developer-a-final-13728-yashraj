@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App } from "./App";
 
@@ -187,6 +187,26 @@ describe("App CRUD UI flows", () => {
     await user.click(screen.getByRole("button", { name: /Add Employee/ }));
     expect(
       await screen.findByText("Unable to load countries."),
+    ).toBeInTheDocument();
+  });
+
+  it("shows an actionable empty employee state", async () => {
+    const user = userEvent.setup();
+    mocks.employeesQuery.data = [];
+    renderApp();
+
+    const emptyState = screen.getByRole("alert");
+    expect(
+      within(emptyState).getByText(
+        "No employees found. Add your first employee.",
+      ),
+    ).toBeInTheDocument();
+
+    await user.click(
+      within(emptyState).getByRole("button", { name: "Add Employee" }),
+    );
+    expect(
+      await screen.findByRole("heading", { name: "Add Employee" }),
     ).toBeInTheDocument();
   });
 
