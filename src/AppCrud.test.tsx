@@ -36,7 +36,17 @@ const mocks = vi.hoisted(() => ({
   },
   search: vi.fn(() => ({ unwrap: vi.fn().mockResolvedValue({}) })),
   create: vi.fn(() => ({ unwrap: vi.fn().mockResolvedValue({}) })),
+  createState: {
+    isLoading: false,
+    isError: false,
+    error: undefined as unknown,
+  },
   update: vi.fn(() => ({ unwrap: vi.fn().mockResolvedValue({}) })),
+  updateState: {
+    isLoading: false,
+    isError: false,
+    error: undefined as unknown,
+  },
   remove: vi.fn(() => ({ unwrap: vi.fn().mockResolvedValue({}) })),
 }));
 
@@ -44,14 +54,8 @@ vi.mock("./features/employees/api/employeeApi", () => ({
   useGetEmployeesQuery: () => mocks.employeesQuery,
   useGetCountriesQuery: () => mocks.countriesQuery,
   useLazyGetEmployeeByIdQuery: () => [mocks.search, { isLoading: false }],
-  useCreateEmployeeMutation: () => [
-    mocks.create,
-    { isLoading: false, isError: false },
-  ],
-  useUpdateEmployeeMutation: () => [
-    mocks.update,
-    { isLoading: false, isError: false },
-  ],
+  useCreateEmployeeMutation: () => [mocks.create, mocks.createState],
+  useUpdateEmployeeMutation: () => [mocks.update, mocks.updateState],
   useDeleteEmployeeMutation: () => [mocks.remove, { isLoading: false }],
 }));
 
@@ -84,6 +88,8 @@ describe("App CRUD UI flows", () => {
     mocks.create.mockClear();
     mocks.update.mockClear();
     mocks.remove.mockClear();
+    mocks.createState.error = undefined;
+    mocks.updateState.error = undefined;
   });
 
   it("submits a valid Add Employee form and shows success feedback", async () => {
@@ -96,6 +102,38 @@ describe("App CRUD UI flows", () => {
     await user.click(screen.getByRole("button", { name: "Add Employee" }));
 
     expect(mocks.create).toHaveBeenCalledOnce();
+    expect(
+      await screen.findByText("Employee added successfully."),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps Add Employee open and shows retry feedback after a failure", async () => {
+    const user = userEvent.setup();
+    mocks.create
+      .mockImplementationOnce(() => ({
+        unwrap: vi.fn().mockRejectedValue({ status: 500 }),
+      }))
+      .mockImplementationOnce(() => ({
+        unwrap: vi.fn().mockResolvedValue({}),
+      }));
+    const { rerender } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: /Add Employee/ }));
+    await screen.findByRole("heading", { name: "Add Employee" });
+    await fillEmployeeForm(user);
+    await user.click(screen.getByRole("button", { name: "Add Employee" }));
+
+    mocks.createState.error = { status: 500 };
+    rerender(<App />);
+    expect(
+      screen.getByRole("heading", { name: "Add Employee" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Unable to save employee. Please check the details and try again.",
+      ),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Try again" }));
     expect(
       await screen.findByText("Employee added successfully."),
     ).toBeInTheDocument();
@@ -229,6 +267,32 @@ describe("App CRUD UI flows", () => {
     expect(
       await screen.findByText("Employee updated successfully."),
     ).toBeInTheDocument();
+  });
+
+  it("keeps Edit Employee open after a mutation failure", async () => {
+    const user = userEvent.setup();
+    mocks.update.mockImplementationOnce(() => ({
+      unwrap: vi.fn().mockRejectedValue({ status: 500 }),
+    }));
+    const { rerender } = renderApp();
+
+    await user.click(screen.getByRole("button", { name: "Edit Ada Lovelace" }));
+    await screen.findByRole("heading", { name: "Edit Employee" });
+    await user.click(screen.getByRole("button", { name: "Save Changes" }));
+
+    mocks.updateState.error = { status: 500 };
+    rerender(<App />);
+    expect(
+      screen.getByRole("heading", { name: "Edit Employee" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Unable to save employee. Please check the details and try again.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Employee updated successfully."),
+    ).not.toBeInTheDocument();
   });
 
   it("opens delete confirmation and does not delete when cancelled", async () => {
