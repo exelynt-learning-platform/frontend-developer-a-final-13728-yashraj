@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
+import type { Control } from "react-hook-form";
 import { ErrorState } from "../../../components/common/AsyncState";
 import type { Country, Employee } from "../types/employee.types";
 import {
@@ -22,6 +23,74 @@ import {
   LOCATION_MAX_LENGTH,
   type EmployeeFormValues,
 } from "../schemas/employeeSchema";
+
+interface EmployeeTextFieldProps {
+  control: Control<EmployeeFormValues>;
+  name: keyof EmployeeFormValues;
+  label: string;
+  type?: string;
+}
+
+function EmployeeTextField({
+  control,
+  name,
+  label,
+  type = "text",
+}: EmployeeTextFieldProps) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState }) => (
+        <TextField
+          {...field}
+          type={type}
+          label={label}
+          fullWidth
+          error={!!fieldState.error}
+          helperText={fieldState.error?.message}
+          inputProps={
+            name === "mobile"
+              ? { inputMode: "numeric", maxLength: 10 }
+              : name === "state" || name === "district"
+                ? { inputMode: "text", maxLength: LOCATION_MAX_LENGTH }
+                : undefined
+          }
+        />
+      )}
+    />
+  );
+}
+
+interface CountrySelectFieldProps {
+  control: Control<EmployeeFormValues>;
+  options: string[];
+}
+
+function CountrySelectField({ control, options }: CountrySelectFieldProps) {
+  return (
+    <Controller
+      name="country"
+      control={control}
+      render={({ field, fieldState }) => (
+        <FormControl fullWidth error={!!fieldState.error}>
+          <InputLabel>Country</InputLabel>
+          <Select {...field} label="Country">
+            <MenuItem value="">
+              <em>Select country</em>
+            </MenuItem>
+            {options.map((option) => (
+              <MenuItem value={option} key={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{fieldState.error?.message}</FormHelperText>
+        </FormControl>
+      )}
+    />
+  );
+}
 
 interface Props {
   employee?: Employee | null;
@@ -61,55 +130,6 @@ export function EmployeeForm({
   const isNameAndEmailValid =
     employeeSchema.shape.name.safeParse(watch("name")).success &&
     employeeSchema.shape.email.safeParse(watch("email")).success;
-  const field = (
-    name: keyof EmployeeFormValues,
-    label: string,
-    type = "text",
-  ) => (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field, fieldState }) => (
-        <TextField
-          {...field}
-          type={type}
-          label={label}
-          fullWidth
-          error={!!fieldState.error}
-          helperText={fieldState.error?.message}
-          inputProps={
-            name === "mobile"
-              ? { inputMode: "numeric", maxLength: 10 }
-              : name === "state" || name === "district"
-                ? { inputMode: "text", maxLength: LOCATION_MAX_LENGTH }
-                : undefined
-          }
-        />
-      )}
-    />
-  );
-  const select = (name: "country", label: string, options: string[]) => (
-    <Controller
-      name={name}
-      control={control}
-      render={({ field, fieldState }) => (
-        <FormControl fullWidth error={!!fieldState.error}>
-          <InputLabel>{label}</InputLabel>
-          <Select {...field} label={label}>
-            <MenuItem value="">
-              <em>Select {label.toLowerCase()}</em>
-            </MenuItem>
-            {options.map((option) => (
-              <MenuItem value={option} key={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{fieldState.error?.message}</FormHelperText>
-        </FormControl>
-      )}
-    />
-  );
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <DialogTitle sx={{ pb: 1 }}>
@@ -125,20 +145,28 @@ export function EmployeeForm({
       <DialogContent>
         <Stack gap={2} sx={{ pt: 1 }}>
           <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-            {field("name", "Name")}
-            {field("email", "Email", "email")}
+            <EmployeeTextField control={control} name="name" label="Name" />
+            <EmployeeTextField
+              control={control}
+              name="email"
+              label="Email"
+              type="email"
+            />
           </Stack>
           <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-            {field("mobile", "Mobile")}
-            {select(
-              "country",
-              "Country",
-              countries.map((item) => item.country),
-            )}
+            <EmployeeTextField control={control} name="mobile" label="Mobile" />
+            <CountrySelectField
+              control={control}
+              options={countries.map((item) => item.country)}
+            />
           </Stack>
           <Stack direction={{ xs: "column", sm: "row" }} gap={2}>
-            {field("state", "State")}
-            {field("district", "District")}
+            <EmployeeTextField control={control} name="state" label="State" />
+            <EmployeeTextField
+              control={control}
+              name="district"
+              label="District"
+            />
           </Stack>
           {countriesLoading && (
             <Alert severity="info">Loading countries...</Alert>
