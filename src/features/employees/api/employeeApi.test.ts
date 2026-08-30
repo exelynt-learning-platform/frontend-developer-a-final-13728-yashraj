@@ -18,6 +18,19 @@ describe("employeeApi", () => {
     });
   });
 
+  it("loads countries through the RTK Query endpoint", async () => {
+    server.use(
+      http.get(`${API_BASE_URL}/country`, () =>
+        HttpResponse.json([{ id: "1", country: "India" }]),
+      ),
+    );
+    const result = await store.dispatch(
+      employeeApi.endpoints.getCountries.initiate(),
+    );
+
+    expect(result.data).toEqual([{ id: "1", country: "India" }]);
+  });
+
   it("supports create, update, and delete mutations", async () => {
     server.use(
       http.post(`${API_BASE_URL}/employee`, async () =>
@@ -77,6 +90,19 @@ describe("employeeApi", () => {
     const result = await store.dispatch(
       employeeApi.endpoints.getEmployees.initiate(),
     );
+    expect("error" in result).toBe(true);
+  });
+
+  it("exposes country API failures", async () => {
+    server.use(
+      http.get(`${API_BASE_URL}/country`, () =>
+        HttpResponse.json({ message: "failure" }, { status: 500 }),
+      ),
+    );
+    const result = await store.dispatch(
+      employeeApi.endpoints.getCountries.initiate(),
+    );
+
     expect("error" in result).toBe(true);
   });
 });
