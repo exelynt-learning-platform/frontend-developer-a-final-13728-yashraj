@@ -27,10 +27,7 @@ import { EmployeeSearch } from "./features/employees/components/EmployeeSearch";
 import { EmployeeSearchResult } from "./features/employees/components/EmployeeSearchResult";
 import { EmployeeTable } from "./features/employees/components/EmployeeTable";
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
-import {
-  getApiErrorMessage,
-  getApiErrorStatus,
-} from "./lib/apiError";
+import { getApiErrorMessage, getApiErrorStatus } from "./lib/apiError";
 
 // These interaction-only components are split out of the initial list bundle.
 // Keep lazy declarations at module scope so React can cache their identity.
@@ -52,10 +49,10 @@ const EMPLOYEES_PER_PAGE = 5;
 export function App() {
   const employeesQuery = useGetEmployeesQuery();
   const countriesQuery = useGetCountriesQuery();
-  const [search, searchState] = useLazyGetEmployeeByIdQuery();
-  const [create, createState] = useCreateEmployeeMutation();
-  const [update, updateState] = useUpdateEmployeeMutation();
-  const [remove, deleteState] = useDeleteEmployeeMutation();
+  const [searchEmployee, searchState] = useLazyGetEmployeeByIdQuery();
+  const [createEmployee, createState] = useCreateEmployeeMutation();
+  const [updateEmployee, updateState] = useUpdateEmployeeMutation();
+  const [deleteEmployeeRequest, deleteState] = useDeleteEmployeeMutation();
   const [formEmployee, setFormEmployee] = useState<Employee | null | undefined>(
     undefined,
   );
@@ -90,18 +87,18 @@ export function App() {
     setSearchError(null);
     setSearchResult(null);
     try {
-      setSearchResult(await search(id).unwrap());
+      setSearchResult(await searchEmployee(id).unwrap());
     } catch (error) {
-      setSearchError(
-        getApiErrorStatus(error) === 404 ? "not-found" : "error",
-      );
+      setSearchError(getApiErrorStatus(error) === 404 ? "not-found" : "error");
     }
   };
   const handleSave = async (values: EmployeeFormValues) => {
     try {
-      if (formEmployee)
-        await update({ id: formEmployee.id, body: values }).unwrap();
-      else await create(values).unwrap();
+      if (formEmployee) {
+        await updateEmployee({ id: formEmployee.id, body: values }).unwrap();
+      } else {
+        await createEmployee(values).unwrap();
+      }
       setFormEmployee(undefined);
       setNotice(
         formEmployee
@@ -115,12 +112,15 @@ export function App() {
   const handleDelete = async () => {
     if (!deleteEmployee) return;
     try {
-      await remove(deleteEmployee.id).unwrap();
+      await deleteEmployeeRequest(deleteEmployee.id).unwrap();
       setDeleteEmployee(null);
       setNotice("Employee deleted successfully.");
     } catch (error) {
       setDeleteError(
-        getApiErrorMessage(error, "Unable to delete employee. Please try again."),
+        getApiErrorMessage(
+          error,
+          "Unable to delete employee. Please try again.",
+        ),
       );
     }
   };
