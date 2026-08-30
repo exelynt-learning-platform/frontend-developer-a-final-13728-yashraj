@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { useState } from "react";
+import { EMPLOYEES_PER_PAGE } from "./features/employees/constants";
 import { EmployeeTable } from "./App";
 
 describe("App", () => {
@@ -121,7 +122,7 @@ describe("App", () => {
     }));
 
     function PaginatedTable() {
-      const [rowsPerPage, setRowsPerPage] = useState(5);
+      const [rowsPerPage, setRowsPerPage] = useState(EMPLOYEES_PER_PAGE);
       return (
         <EmployeeTable
           employees={employees}
@@ -156,7 +157,7 @@ describe("App", () => {
     }));
 
     function PaginatedTable() {
-      const [rowsPerPage, setRowsPerPage] = useState(5);
+      const [rowsPerPage, setRowsPerPage] = useState(EMPLOYEES_PER_PAGE);
       return (
         <EmployeeTable
           employees={employees}
