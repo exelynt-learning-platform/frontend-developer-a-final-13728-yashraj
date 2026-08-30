@@ -245,7 +245,19 @@ export function App() {
           {!employeesQuery.isLoading &&
             !employeesQuery.isError &&
             employeesQuery.data?.length === 0 && (
-              <Alert severity="info">No employees found.</Alert>
+              <Alert
+                severity="info"
+                action={
+                  <Button
+                    color="inherit"
+                    onClick={() => setFormState({ mode: "create" })}
+                  >
+                    Add Employee
+                  </Button>
+                }
+              >
+                No employees found. Add your first employee.
+              </Alert>
             )}
           {!employeesQuery.isLoading &&
             !employeesQuery.isError &&
