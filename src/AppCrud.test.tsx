@@ -306,6 +306,9 @@ describe("App CRUD UI flows", () => {
     );
     await screen.findByRole("heading", { name: "Delete Employee?" });
     expect(
+      screen.getByRole("dialog", { name: "Delete Employee?" }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("heading", { name: "Delete Employee?" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Cancel" }));

@@ -31,6 +31,7 @@ import {
   LoadingState,
 } from "../../../components/common/AsyncState";
 import { getApiErrorMessage, getApiErrorStatus } from "../../../lib/apiError";
+import { EMPLOYEES_PER_PAGE } from "../constants";
 
 const EmployeeForm = lazy(() =>
   import("../components/EmployeeForm").then((module) => ({
@@ -43,7 +44,6 @@ const DeleteEmployeeDialog = lazy(() =>
   })),
 );
 
-const EMPLOYEES_PER_PAGE = 5;
 type EmployeeFormState =
   | { mode: "closed" }
   | { mode: "create" }
@@ -132,13 +132,13 @@ export function EmployeesPage() {
     }
   };
 
-  const formError =
-    createState.error || updateState.error
-      ? getApiErrorMessage(
-          createState.error ?? updateState.error,
-          "Unable to save employee. Please check the details and try again.",
-        )
-      : undefined;
+  const saveError = formEmployee ? updateState.error : createState.error;
+  const formError = saveError
+    ? getApiErrorMessage(
+        saveError,
+        "Unable to save employee. Please check the details and try again.",
+      )
+    : undefined;
 
   return (
     <>

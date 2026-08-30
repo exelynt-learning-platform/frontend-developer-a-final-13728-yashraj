@@ -23,3 +23,8 @@ export const formatEmail = (value: string) => {
     ? normalizedValue
     : NOT_AVAILABLE;
 };
+
+export const formatMobile = (value: string) => {
+  const normalizedValue = value.trim();
+  return /^\d{10}$/.test(normalizedValue) ? normalizedValue : NOT_AVAILABLE;
+};

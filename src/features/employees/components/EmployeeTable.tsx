@@ -20,21 +20,16 @@ import {
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { EMPLOYEES_PER_PAGE } from "../constants";
 import type { Employee, Country } from "../types/employee.types";
 import {
   formatEmail,
+  formatMobile,
   formatNameOrCountry,
-  NOT_AVAILABLE,
 } from "../utils/formatEmployeeValue";
 
-const EMPLOYEES_PER_PAGE = 5;
 type SortKey = "name" | "email" | "mobile" | "country";
 type SortDirection = "asc" | "desc";
-
-const formatMobile = (value: string) => {
-  const normalizedValue = (value ?? "").trim();
-  return /^\d{10}$/.test(normalizedValue) ? normalizedValue : NOT_AVAILABLE;
-};
 
 const sortableColumns: Array<{ key: SortKey; label: string }> = [
   { key: "name", label: "Name" },
