@@ -1,7 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { Country, Employee, EmployeeInput } from "../types/employee.types";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+export const API_BASE_URL =
+  configuredApiBaseUrl ??
+  (import.meta.env.MODE === "test" ? "http://localhost/api/v1" : "");
 
 if (!API_BASE_URL) {
   throw new Error(

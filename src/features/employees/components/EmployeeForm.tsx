@@ -14,19 +14,22 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import type { Control } from "react-hook-form";
 import { ErrorState } from "../../../components/common/AsyncState";
 import type { Country, Employee } from "../types/employee.types";
 import {
   employeeSchema,
+  employeeIdentitySchema,
   LOCATION_MAX_LENGTH,
   type EmployeeFormValues,
 } from "../schemas/employeeSchema";
 
+type EmployeeTextFieldName = "name" | "email" | "mobile" | "state" | "district";
+
 interface EmployeeTextFieldProps {
   control: Control<EmployeeFormValues>;
-  name: keyof EmployeeFormValues;
+  name: EmployeeTextFieldName;
   label: string;
   type?: string;
 }
@@ -115,7 +118,7 @@ export function EmployeeForm({
   onSubmit,
   onCancel,
 }: Props) {
-  const { control, handleSubmit, watch } = useForm<EmployeeFormValues>({
+  const { control, handleSubmit } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
     mode: "onChange",
     defaultValues: {
@@ -127,9 +130,14 @@ export function EmployeeForm({
       district: employee?.district ?? "",
     },
   });
-  const isNameAndEmailValid =
-    employeeSchema.shape.name.safeParse(watch("name")).success &&
-    employeeSchema.shape.email.safeParse(watch("email")).success;
+  const [name, email] = useWatch({
+    control,
+    name: ["name", "email"],
+  });
+  const isNameAndEmailValid = employeeIdentitySchema.safeParse({
+    name,
+    email,
+  }).success;
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <DialogTitle sx={{ pb: 1 }}>

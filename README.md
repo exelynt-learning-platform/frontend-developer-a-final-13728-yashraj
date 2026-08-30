@@ -75,7 +75,7 @@ Set the API base URL in `.env`:
 VITE_API_BASE_URL=https://669b3f09276e45187d34eb4e.mockapi.io/api/v1
 ```
 
-The application fails clearly at startup when `VITE_API_BASE_URL` is missing. The local `.env` file is ignored by Git; `.env.example` is the committed configuration template.
+The application fails clearly at startup when `VITE_API_BASE_URL` is missing outside tests; tests use a local-only fallback because all API calls are intercepted by MSW. The local `.env` file is ignored by Git; `.env.example` is the committed configuration template.
 
 ### Start development
 
@@ -223,4 +223,3 @@ The current implementation has been verified with these checks. Vite may report 
 `AGENTS.md` contains the repository’s implementation standards, including architecture, API, validation, testing, accessibility, responsive-design, and scope guidance. Changes should remain focused, typed, testable, and limited to the requested requirement.
 
 # frontend-developer-a-final-13728-yashraj
-
