@@ -27,6 +27,10 @@ import { EmployeeSearch } from "./features/employees/components/EmployeeSearch";
 import { EmployeeSearchResult } from "./features/employees/components/EmployeeSearchResult";
 import { EmployeeTable } from "./features/employees/components/EmployeeTable";
 import { ErrorState, LoadingState } from "./components/common/AsyncState";
+import {
+  getApiErrorMessage,
+  getApiErrorStatus,
+} from "./lib/apiError";
 
 // These interaction-only components are split out of the initial list bundle.
 // Keep lazy declarations at module scope so React can cache their identity.
@@ -89,7 +93,7 @@ export function App() {
       setSearchResult(await search(id).unwrap());
     } catch (error) {
       setSearchError(
-        (error as { status?: number }).status === 404 ? "not-found" : "error",
+        getApiErrorStatus(error) === 404 ? "not-found" : "error",
       );
     }
   };
@@ -114,13 +118,18 @@ export function App() {
       await remove(deleteEmployee.id).unwrap();
       setDeleteEmployee(null);
       setNotice("Employee deleted successfully.");
-    } catch {
-      setDeleteError("Unable to delete employee. Please try again.");
+    } catch (error) {
+      setDeleteError(
+        getApiErrorMessage(error, "Unable to delete employee. Please try again."),
+      );
     }
   };
   const formError =
-    createState.isError || updateState.isError
-      ? "Unable to save employee. Please check the details and try again."
+    createState.error || updateState.error
+      ? getApiErrorMessage(
+          createState.error ?? updateState.error,
+          "Unable to save employee. Please check the details and try again.",
+        )
       : undefined;
   return (
     <>
