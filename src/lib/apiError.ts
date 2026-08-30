@@ -16,13 +16,14 @@ export function getApiErrorStatus(error: unknown): number | undefined {
   return undefined;
 }
 
-export function getApiErrorMessage(
-  error: unknown,
-  fallback: string,
-): string {
+export function getApiErrorMessage(error: unknown, fallback: string): string {
   if (typeof error !== "object" || error === null) return fallback;
 
-  if ("data" in error && typeof error.data === "object" && error.data !== null) {
+  if (
+    "data" in error &&
+    typeof error.data === "object" &&
+    error.data !== null
+  ) {
     if ("message" in error.data && typeof error.data.message === "string") {
       return error.data.message;
     }

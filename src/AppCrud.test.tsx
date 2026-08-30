@@ -13,15 +13,17 @@ const mocks = vi.hoisted(() => ({
     district: "New Delhi",
   },
   employeesQuery: {
-    data: [{
-      id: "1",
-      name: "Ada Lovelace",
-      email: "ada@example.com",
-      mobile: "1234567890",
-      country: "India",
-      state: "Delhi",
-      district: "New Delhi",
-    }],
+    data: [
+      {
+        id: "1",
+        name: "Ada Lovelace",
+        email: "ada@example.com",
+        mobile: "1234567890",
+        country: "India",
+        state: "Delhi",
+        district: "New Delhi",
+      },
+    ],
     isLoading: false,
     isError: false,
     refetch: vi.fn(),
@@ -42,8 +44,14 @@ vi.mock("./features/employees/api/employeeApi", () => ({
   useGetEmployeesQuery: () => mocks.employeesQuery,
   useGetCountriesQuery: () => mocks.countriesQuery,
   useLazyGetEmployeeByIdQuery: () => [mocks.search, { isLoading: false }],
-  useCreateEmployeeMutation: () => [mocks.create, { isLoading: false, isError: false }],
-  useUpdateEmployeeMutation: () => [mocks.update, { isLoading: false, isError: false }],
+  useCreateEmployeeMutation: () => [
+    mocks.create,
+    { isLoading: false, isError: false },
+  ],
+  useUpdateEmployeeMutation: () => [
+    mocks.update,
+    { isLoading: false, isError: false },
+  ],
   useDeleteEmployeeMutation: () => [mocks.remove, { isLoading: false }],
 }));
 
@@ -88,7 +96,9 @@ describe("App CRUD UI flows", () => {
     await user.click(screen.getByRole("button", { name: "Add Employee" }));
 
     expect(mocks.create).toHaveBeenCalledOnce();
-    expect(await screen.findByText("Employee added successfully.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Employee added successfully."),
+    ).toBeInTheDocument();
   });
 
   it("blocks Add until Name and Email are valid and preserves other validation", async () => {
@@ -103,7 +113,9 @@ describe("App CRUD UI flows", () => {
     await user.type(screen.getByLabelText("Name"), "ada lovelace");
     await user.type(screen.getByLabelText("Email"), "Ada@example.com");
     expect(screen.getByText(/Each name word must start/)).toBeInTheDocument();
-    expect(screen.getByText(/email address must be lowercase/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/email address must be lowercase/),
+    ).toBeInTheDocument();
     expect(addButton).toBeDisabled();
 
     await user.clear(screen.getByLabelText("Name"));
@@ -113,7 +125,9 @@ describe("App CRUD UI flows", () => {
     expect(addButton).toBeEnabled();
     await user.click(addButton);
 
-    expect(screen.getByText("Mobile must contain exactly 10 digits.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Mobile must contain exactly 10 digits."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Country is required.")).toBeInTheDocument();
   });
 
@@ -171,7 +185,9 @@ describe("App CRUD UI flows", () => {
     mocks.countriesQuery.isError = true;
     rerender(<App />);
     await user.click(screen.getByRole("button", { name: /Add Employee/ }));
-    expect(await screen.findByText("Unable to load countries.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Unable to load countries."),
+    ).toBeInTheDocument();
   });
 
   it("prefills Edit Employee and submits the updated values", async () => {
@@ -190,32 +206,44 @@ describe("App CRUD UI flows", () => {
       id: "1",
       body: expect.objectContaining({ name: "Grace Hopper" }),
     });
-    expect(await screen.findByText("Employee updated successfully.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Employee updated successfully."),
+    ).toBeInTheDocument();
   });
 
   it("opens delete confirmation and does not delete when cancelled", async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("button", { name: "Delete Ada Lovelace" }));
+    await user.click(
+      screen.getByRole("button", { name: "Delete Ada Lovelace" }),
+    );
     await screen.findByRole("heading", { name: "Delete Employee?" });
-    expect(screen.getByRole("heading", { name: "Delete Employee?" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Delete Employee?" }),
+    ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(mocks.remove).not.toHaveBeenCalled();
-    expect(screen.queryByRole("heading", { name: "Delete Employee?" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Delete Employee?" }),
+    ).not.toBeInTheDocument();
   });
 
   it("deletes after confirmation and shows success feedback", async () => {
     const user = userEvent.setup();
     renderApp();
 
-    await user.click(screen.getByRole("button", { name: "Delete Ada Lovelace" }));
+    await user.click(
+      screen.getByRole("button", { name: "Delete Ada Lovelace" }),
+    );
     await screen.findByRole("heading", { name: "Delete Employee?" });
     await user.click(screen.getByRole("button", { name: "Delete" }));
 
     expect(mocks.remove).toHaveBeenCalledWith("1");
-    expect(await screen.findByText("Employee deleted successfully.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Employee deleted successfully."),
+    ).toBeInTheDocument();
   });
 
   it("keeps delete confirmation open and retries after a delete failure", async () => {
@@ -224,16 +252,24 @@ describe("App CRUD UI flows", () => {
       .mockImplementationOnce(() => ({
         unwrap: vi.fn().mockRejectedValue({ status: 500 }),
       }))
-      .mockImplementationOnce(() => ({ unwrap: vi.fn().mockResolvedValue({}) }));
+      .mockImplementationOnce(() => ({
+        unwrap: vi.fn().mockResolvedValue({}),
+      }));
     renderApp();
 
-    await user.click(screen.getByRole("button", { name: "Delete Ada Lovelace" }));
+    await user.click(
+      screen.getByRole("button", { name: "Delete Ada Lovelace" }),
+    );
     await screen.findByRole("heading", { name: "Delete Employee?" });
     await user.click(screen.getByRole("button", { name: "Delete" }));
-    expect(await screen.findByText("Unable to delete employee. Please try again.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Unable to delete employee. Please try again."),
+    ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Try again" }));
 
     expect(mocks.remove).toHaveBeenCalledTimes(2);
-    expect(await screen.findByText("Employee deleted successfully.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Employee deleted successfully."),
+    ).toBeInTheDocument();
   });
 });

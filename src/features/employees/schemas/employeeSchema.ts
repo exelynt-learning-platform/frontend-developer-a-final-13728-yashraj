@@ -35,10 +35,7 @@ export const employeeSchema = z.object({
     .trim()
     .email("Enter a valid email address.")
     .max(120, "Email cannot exceed 120 characters.")
-    .regex(
-      /^\P{Lu}*$/u,
-      "Each word in the email address must be lowercase.",
-    ),
+    .regex(/^\P{Lu}*$/u, "Each word in the email address must be lowercase."),
   mobile: z
     .string()
     .trim()

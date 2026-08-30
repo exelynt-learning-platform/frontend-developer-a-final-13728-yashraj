@@ -9,9 +9,9 @@ describe("apiError", () => {
   });
 
   it("uses an RTK serialized message when available", () => {
-    expect(
-      getApiErrorMessage({ message: "Request failed." }, "Fallback"),
-    ).toBe("Request failed.");
+    expect(getApiErrorMessage({ message: "Request failed." }, "Fallback")).toBe(
+      "Request failed.",
+    );
   });
 
   it("returns the safe fallback for unknown errors", () => {

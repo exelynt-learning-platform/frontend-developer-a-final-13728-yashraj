@@ -18,6 +18,9 @@ Tests use MSW and never depend on the live API.
 
 ## Scripts
 
+- `npm run format` - format supported project files with Prettier
+- `npm run format:check` - verify project formatting with Prettier
+
 - `npm run dev` — start the Vite development server
 - `npm run lint` — run ESLint
 - `npm run test` — run Vitest in watch mode

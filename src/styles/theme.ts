@@ -24,7 +24,10 @@ export const theme = createTheme({
   components: {
     MuiAppBar: {
       styleOverrides: {
-        root: { backgroundImage: "none", boxShadow: "0 1px 0 rgba(23, 33, 43, 0.08)" },
+        root: {
+          backgroundImage: "none",
+          boxShadow: "0 1px 0 rgba(23, 33, 43, 0.08)",
+        },
       },
     },
     MuiButton: {
